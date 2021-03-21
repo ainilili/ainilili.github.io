@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="¶Spring Cloud Gateway介绍 废话不多说，看官方文档的介绍  This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to">
+<meta name="keywords" content="“博客,Java,Python,Node,开源,框架,并发,Mysql”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud Gateway深入探究">
+<meta property="og:url" content="http://yoursite.com/2018/11/06/Spring-Cloud-Gateway深入探究/index.html">
+<meta property="og:site_name" content="Nico&#39;s Blog">
+<meta property="og:description" content="¶Spring Cloud Gateway介绍 废话不多说，看官方文档的介绍  This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/spring-cloud/spring-cloud-gateway/master/docs/src/main/asciidoc/images/spring_cloud_gateway_diagram.png">
+<meta property="og:updated_time" content="2018-11-06T05:18:57.666Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Cloud Gateway深入探究">
+<meta name="twitter:description" content="¶Spring Cloud Gateway介绍 废话不多说，看官方文档的介绍  This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/spring-cloud/spring-cloud-gateway/master/docs/src/main/asciidoc/images/spring_cloud_gateway_diagram.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/06/Spring-Cloud-Gateway深入探究/">
+
+
+
+
+
+  <title>Spring Cloud Gateway深入探究 | Nico's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Nico's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">兴趣使然的Coder</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Gateway深入探究/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring Cloud Gateway深入探究</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:41:00+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="spring-cloud-gateway介绍"><a class="header-anchor" href="#spring-cloud-gateway介绍">¶</a>Spring Cloud Gateway介绍</h2>
+<p>废话不多说，看官方文档的介绍</p>
+<blockquote>
+<p>This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.</p>
+</blockquote>
+<p>有道翻译一下:</p>
+<p>这个项目提供了一个建在Spring生态系统之上的API网关，包括:Spring 5, Spring Boot 2和project Reactor。Spring Cloud Gateway旨在提供一种简单而有效的方式来路由到api，并为它们提供交叉关注，例如:安全性、监视/度量和弹性。</p>
+<p>工作原理如下：</p>
+<p><img src="https://raw.githubusercontent.com/spring-cloud/spring-cloud-gateway/master/docs/src/main/asciidoc/images/spring_cloud_gateway_diagram.png" alt="image"></p>
+<p>Gateway实际上提供了一个在路由上的控制功能，大体包含两个大功能：</p>
+<ul>
+<li>Route</li>
+<li>Filter</li>
+<li>Forward</li>
+</ul>
+<p>我们可以通过Route去匹配请求的uri，而每个Router下可以配置一个Filter Chain，我们可以通过Filter去修饰请求和响应及一些类似鉴权等中间动作，通过Forward可以控制重定向和请求转发（实际上Filter也可以做到，只不过这里分开说清晰一点）。在路由控制上，Gateway表现的非常灵活，它有两种配置方式：</p>
+<ul>
+<li>Yml or Properties File</li>
+<li>Code</li>
+</ul>
+<p>主要名词如下：</p>
+<ul>
+<li><strong>Route</strong>: Route the basic building block of the gateway. It is defined by an ID, a destination URI, a collection of predicates and a collection of filters. A route is matched if aggregate predicate is true.</li>
+<li><strong>Predicate</strong>: This is a Java 8 Function Predicate. The input type is a Spring Framework ServerWebExchange. This allows developers to match on anything from the HTTP request, such as headers or parameters.</li>
+<li><strong>Filter</strong>: These are instances Spring Framework GatewayFilter constructed in with a specific factory. Here, requests and responses can be modified before or after sending the downstream request.</li>
+</ul>
+<p>Route 作为Gateway中的基本元素，它有自己的ID、URI和一个Predicate集合、Filter集合。Predicate的作用是判断请求的Uri是否匹配当前的Route，Filter则是匹配通过之后对请求和响应的处理及修饰，那么在Gateway中Route基本结构如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Gateway&#123;</span><br><span class="line">    Route1 &#123;</span><br><span class="line">        String id;</span><br><span class="line">        String path;</span><br><span class="line">        List&lt;Predicate&gt; predicates;</span><br><span class="line">        List&lt;Filter&gt; filters;</span><br><span class="line">    &#125;;</span><br><span class="line">    Route2 &#123;</span><br><span class="line">        String id;</span><br><span class="line">        String path;</span><br><span class="line">        List&lt;Predicate&gt; predicates;</span><br><span class="line">        List&lt;Filter&gt; filters;</span><br><span class="line">    &#125;;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Route中的ID作为它的唯一标识，path的作用是正则匹配请求路径，Predicate则是在path匹配的情况下进一步去更加细致的匹配请求路径，如一下例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: before_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Before=2017-01-20T17:42:47.789-07:00[America/Denver]</span><br></pre></td></tr></table></figure>
+<p>只匹配在<code>Jan 20, 2017 17:42</code> 发起的请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: cookie_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Cookie=chocolate, “”</span><br></pre></td></tr></table></figure>
+<p>只匹配请求中携带<code>chocolate</code>且值为<code>ch.p</code>的请求</p>
+<p>更多例子这里就不一一展开，有兴趣的可以去看下官方文档: <a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#gateway-request-predicates-factories" target="_blank" rel="noopener">传送门</a></p>
+<h2 id="spring-cloud-gateway-配置"><a class="header-anchor" href="#spring-cloud-gateway-配置">¶</a>Spring Cloud Gateway 配置</h2>
+<h4 id="maven"><a class="header-anchor" href="#maven">¶</a>Maven</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencyManagement&gt;</span><br><span class="line">		&lt;dependencies&gt;</span><br><span class="line">			&lt;dependency&gt;</span><br><span class="line">				&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">				&lt;artifactId&gt;spring-cloud-gateway&lt;/artifactId&gt;</span><br><span class="line">				&lt;version&gt;2.0.2.BUILD-SNAPSHOT&lt;/version&gt;</span><br><span class="line">				&lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">				&lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">			&lt;/dependency&gt;</span><br><span class="line">		&lt;/dependencies&gt;</span><br><span class="line">	&lt;/dependencyManagement&gt;</span><br><span class="line">	&lt;dependencies&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;spring-cloud-starter-gateway&lt;/artifactId&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">		    &lt;groupId&gt;org.yaml&lt;/groupId&gt;</span><br><span class="line">		    &lt;artifactId&gt;snakeyaml&lt;/artifactId&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">	&lt;/dependencies&gt;</span><br><span class="line">	&lt;repositories&gt;</span><br><span class="line">		&lt;repository&gt;</span><br><span class="line">			&lt;id&gt;spring-snapshots&lt;/id&gt;</span><br><span class="line">			&lt;name&gt;Spring Snapshots&lt;/name&gt;</span><br><span class="line">			&lt;url&gt;https://repo.spring.io/libs-snapshot&lt;/url&gt;</span><br><span class="line">			&lt;snapshots&gt;</span><br><span class="line">				&lt;enabled&gt;true&lt;/enabled&gt;</span><br><span class="line">			&lt;/snapshots&gt;</span><br><span class="line">		&lt;/repository&gt;</span><br><span class="line">	&lt;/repositories&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="yml"><a class="header-anchor" href="#yml">¶</a>Yml</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: cookie_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Cookie=chocolate, ch.p</span><br></pre></td></tr></table></figure>
+<h4 id="java-config"><a class="header-anchor" href="#java-config">¶</a>Java Config</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@RestController</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class Application &#123;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">		return builder.routes()</span><br><span class="line">				.route(r -&gt; r.path(&quot;/request/**&quot;)</span><br><span class="line">						.and()</span><br><span class="line">						.predicate(new Predicate&lt;ServerWebExchange&gt;() &#123;</span><br><span class="line">							@Override</span><br><span class="line">							public boolean test(ServerWebExchange t) &#123;</span><br><span class="line">								boolean access = t.getRequest().getCookies().get(&quot;_9755xjdesxxd_&quot;).get(0).getValue().equals(&quot;32&quot;);</span><br><span class="line">								return access;</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;)</span><br><span class="line">						.filters(f -&gt; f.stripPrefix(2)</span><br><span class="line">							.filter(new GatewayFilter() &#123;</span><br><span class="line">								@Override</span><br><span class="line">								public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;</span><br><span class="line">									return chain.filter(exchange);</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;, 2)</span><br><span class="line">							.filter(new GatewayFilter() &#123;</span><br><span class="line">								@Override</span><br><span class="line">								public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;</span><br><span class="line">									return chain.filter(exchange);</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;, 1))</span><br><span class="line">						.uri(&quot;http://localhost:8080/hello&quot;)</span><br><span class="line">						).build();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@GetMapping(&quot;/hello&quot;)</span><br><span class="line">	public String hello() &#123;</span><br><span class="line">		return &quot;hello&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Yml配置和Java代码配置可以共存，Yml配置的好处是可以直接用自带的一些谓词和Filter，而Java代码配置更加灵活！</p>
+<h2 id="spring-cloud-gateway使用"><a class="header-anchor" href="#spring-cloud-gateway使用">¶</a>Spring Cloud Gateway使用</h2>
+<p>上文已经说过，Gateway支持两种配置，本文主要以Java Config的方式着重讲解，因为官方文档中对于Yml配置的讲解已经足够深入，如有兴趣可以进入<a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#gateway-how-it-works" target="_blank" rel="noopener">传送门</a></p>
+<h4 id="route"><a class="header-anchor" href="#route">¶</a>Route</h4>
+<p>一个Route的配置可以足够简单</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@RestController</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class Application1 &#123;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">		return builder.routes()</span><br><span class="line">				.route(r -&gt; r.path(&quot;/user/**&quot;)</span><br><span class="line">						.uri(&quot;http://localhost:8080/hello&quot;)</span><br><span class="line">						).build();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@GetMapping(&quot;/hello&quot;)</span><br><span class="line">	public String hello() &#123;</span><br><span class="line">		return &quot;hello&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">		SpringApplication.run(Application1.class, args);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述Demo定义了一个Route，并且path值为<code>/**</code>，意味着匹配多层uri，如果将path改为<code>/*</code>则意味着只能匹配一层。所以运行上面的程序，那么所有的请求都将被转发到<code>http://localhost:8080/hello</code></p>
+<p>如果uri的配置并没有一个确定的资源，例如<code>http://ip:port</code>，那么<code>/**</code>所匹配的路径将会自动拼装在uri之后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://当前服务/user/1</span><br><span class="line">forward http://ip:port/user/1</span><br></pre></td></tr></table></figure>
+<p>这种方式更适合服务之间的转发，我们可以将uri设置为<code>ip:port</code>也可以设置为<code>xxx.com</code>域名，但是不能自己转发自己的服务，例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://当前服务/user/1</span><br><span class="line">forward http://当前服务/user/1</span><br></pre></td></tr></table></figure>
+<p>这就导致了HTTP 413的错误，无限转发至自己，也就意味着请求死锁，非常致命！最好的方式如下：</p>
+<p>我们拟定开两个服务占用的端口分别是<code>8080</code>和<code>8081</code>,我们假如要从<code>8080</code>服务通过<code>/user/**</code>路由匹配转发至<code>8081</code>服务，可以这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>工作跟踪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://localhost:8080/user/hello</span><br><span class="line">forward http://localhost:8081/user/hello</span><br></pre></td></tr></table></figure>
+<p>8081服务接口定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/user/hello&quot;)</span><br><span class="line">public String hello() &#123;</span><br><span class="line">	return &quot;User Say Hello&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Reponse Body：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User Say Hello</span><br></pre></td></tr></table></figure>
+<p>当Gateway代替Zuul时，也就是说在服务间的通讯由Zuul转换成Gateway之后，uri的写法将会变成这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(r -&gt; r.path(&quot;user/**&quot;)</span><br><span class="line">					.uri(&quot;lb://USER_SERVER_NAME&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码将<code>user/**</code>所匹配的请求全部转发到<code>USER_SERVER_NAME</code>服务下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request /user/1</span><br><span class="line">forward http://USER_SERVER_HOST:USER_SERVER_PORT/user/1</span><br></pre></td></tr></table></figure>
+<p>其中<strong>lb</strong>的含义其实是<code>load balance</code>的意思，我想开发者以lb来区分路由模式可能是负载均衡意味着多服务的环境，因此lb可以表示转发对象从指定的uri转变成了服务！</p>
+<h4 id="predicate"><a class="header-anchor" href="#predicate">¶</a>Predicate</h4>
+<p>Predicate是Java 8+新出的一个库，本身作用是进行逻辑运算，支持种类如下：</p>
+<ul>
+<li>isEqual</li>
+<li>and</li>
+<li>negate</li>
+<li>or<br>
+另外还有一个方法<code>test(T)</code>用于触发逻辑计算返回一个Boolean类型值。</li>
+</ul>
+<p>Gateway使用Predicate来做除path pattern match之外的匹配判断，使用及其简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.predicate(e -&gt; e.getClass() != null)</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输入的<strong>e</strong>代表着<code>ServerWebExchange</code>对象，我们可以通过<code>ServerWebExchange</code>获取所有请求相关的信息，例如Cookies和Headers。通过Lambda语法去编写判断逻辑，如果一个Route中所有的Predicate返回的结果都是TRUE则匹配成功，否则匹配失败。</p>
+<blockquote>
+<p>Tp：path和predicate需要使用and链接，也可以使用or链接，分别代表不同的逻辑运算！</p>
+</blockquote>
+<h4 id="filter"><a class="header-anchor" href="#filter">¶</a>Filter</h4>
+<p>Filter的作用类似于Predicate，区别在于，Predicate可以做请求中断，Filter也可以做，Filter可以做Reponse的修饰，Predicate并做不到，也就是说Filter最为最后一道拦截，可以做的事情有很多，例如修改响应报文，增加个Header或者Cookie，甚至修改响应Body，相比之下，Filter更加全能！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.predicate(e -&gt; e.getClass() != null)</span><br><span class="line">					.filters(fn -&gt; fn.addResponseHeader(&quot;developer&quot;, &quot;Nico&quot;))</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="spring-cloud-gateway-工作原理"><a class="header-anchor" href="#spring-cloud-gateway-工作原理">¶</a>Spring Cloud Gateway 工作原理</h2>
+<p>Gateway是基于Spring MVC之上的网关路由控制器，我们可以直接定位到Spring MVC的<code>org.springframework.web.reactive.DispatcherHandler</code>类，它的<code>handle</code>方法将会处理解析Request之后的<code>ServerWebExchange</code>对象。</p>
+<p>进入<code>handle</code>方法，将会使用Flux遍历<code>org.springframework.web.reactive.DispatcherHandler.handlerMappings</code>对<code>ServerWebExchange</code>进行处理,<code>handlerMappings</code>中包含着一下处理器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.web.reactive.function.server.support.RouterFunctionMapping@247a29b6, org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping@f6449f4, org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping@535c6b8b,</span><br><span class="line">org.springframework.web.reactive.handler.SimpleUrlHandlerMapping@5633e9e</span><br></pre></td></tr></table></figure>
+<p>以上只是一个简单请求的处理器，Flux的<code>concatMap</code>方法会将每个处理器的Mono合并成一个Flux，然后调用<code>org.springframework.web.reactive.DispatcherHandler</code>类中的<code>invokeHandler</code>方法开始处理<code>ServerWebExchange</code>,处理完毕之后将紧接着处理返回值，这时使用<code>handleResult</code>方法，具体实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Mono&lt;Void&gt; handle(ServerWebExchange exchange) &#123;</span><br><span class="line">	if (logger.isDebugEnabled()) &#123;</span><br><span class="line">		ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">		logger.debug(&quot;Processing &quot; + request.getMethodValue() + &quot; request for [&quot; + request.getURI() + &quot;]&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	if (this.handlerMappings == null) &#123;</span><br><span class="line">		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);</span><br><span class="line">	&#125;</span><br><span class="line">	return Flux.fromIterable(this.handlerMappings)</span><br><span class="line">			.concatMap(mapping -&gt; mapping.getHandler(exchange))</span><br><span class="line">			.next()</span><br><span class="line">			.switchIfEmpty(Mono.error(HANDLER_NOT_FOUND_EXCEPTION))</span><br><span class="line">			.flatMap(handler -&gt; invokeHandler(exchange, handler))</span><br><span class="line">			.flatMap(result -&gt; handleResult(exchange, result));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Gateway起作用的关键在于<code>invokeHandler</code>方法中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private Mono&lt;HandlerResult&gt; invokeHandler(ServerWebExchange exchange, Object handler) &#123;</span><br><span class="line">	if (this.handlerAdapters != null) &#123;</span><br><span class="line">		for (HandlerAdapter handlerAdapter : this.handlerAdapters) &#123;</span><br><span class="line">			if (handlerAdapter.supports(handler)) &#123;</span><br><span class="line">				return handlerAdapter.handle(exchange, handler);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return Mono.error(new IllegalStateException(&quot;No HandlerAdapter: &quot; + handler));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的处理器的适配器匹配到本身之后，将会触发适配器的处理方法，每个处理器都会实现一个对应的接口，他们大致都有一个共同的特点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Handler &#123;</span><br><span class="line"></span><br><span class="line">	Mono&lt;Void&gt; handle(ServerWebExchange exchange);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个适配器的处理方法中都会在穿插入适配逻辑代码之后调用处理器的<code>handle</code>方法，Spring Cloud Gateway的所有Handler都在<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line">org.springframework.cloud.gateway.handler.AsyncPredicate&lt;T&gt;</span><br><span class="line">org.springframework.cloud.gateway.handler.FilteringWebHandler</span><br><span class="line">org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，上述三个处理器分别处理了Filter和Predicate，有兴趣的朋友可以去看一下这些类内部的具体实现，这里就不一一细说。</p>
+<p>总的来讲，Spring Cloud Gateway的原理是在服务加载期间读取自己的配置将信息存放在一个容器中，在Spring Mvc 处理请求的时候取出这些信息进行<strong>逻辑判断</strong>及<strong>过滤</strong>，根据不同的处理结果触发不同的事件！</p>
+<p>而请求转发这一块有兴趣的同学可以去研究一下！</p>
+<blockquote>
+<p>TP: path的匹配其实也是一个Predicate逻辑判断</p>
+</blockquote>
+<h2 id="spring-cloud-gateway-总结"><a class="header-anchor" href="#spring-cloud-gateway-总结">¶</a>Spring Cloud Gateway 总结</h2>
+<p>笔者偶然间看到spring-cloud-netflix的issue下的一个回答<a href="https://github.com/spring-cloud/spring-cloud-netflix/issues/2951" target="_blank" rel="noopener">传送门</a>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lovnx：Zuul 2.0 has opened sourcing,Do you intend to integrate it in some next version?</span><br><span class="line">spencergibb：No. We created spring cloud gateway instead.</span><br></pre></td></tr></table></figure>
+<p>这才感觉到Spring Cloud果然霸气，也因此接触到了Spring Cloud Gateway，觉得很有必要学习一下，总体来讲，Spring Cloud Gateway简化了之前过滤器配置的复杂度，也在新的配置方式上增加了微服务的网关配置，可以直接代替掉Zuul，期待着Spring会整出自己的注册中心来。</p>
+<p>笔者学艺不精，以上阐述有误的地方，希望批评指出，联系方式：ainililia@163.com</p>
+<h2 id="相关文档"><a class="header-anchor" href="#相关文档">¶</a>相关文档</h2>
+<p><a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#_glossary" target="_blank" rel="noopener">官方文档</a><br>
+<a href="http://ju.outofmemory.cn/entry/346688" target="_blank" rel="noopener">Spring Cloud Gateway 入门</a><br>
+<a href="https://blog.csdn.net/qq_28089993/article/details/79443447" target="_blank" rel="noopener">响应式编程之Reactor的关于Flux和Mono概念</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/06/hello-world/" rel="next" title="使用Arthas监控Java进程">
+                <i class="fa fa-chevron-left"></i> 使用Arthas监控Java进程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/" rel="prev" title="Spring Cloud Eureka 使用Nginx做路由网关">
+                Spring Cloud Eureka 使用Nginx做路由网关 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4" alt="Nico">
+            
+              <p class="site-author-name" itemprop="name">Nico</p>
+              <p class="site-description motion-element" itemprop="description">我是Nico，梦想是做一名兴趣使然的码农，于是我一步步变强，后来我成为了光头</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ainilili" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://study.ikuvn.com/" title="Nico的学习历程" target="_blank">Nico的学习历程</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://byte.ikuvn.com/" title="Nico的字符玩具" target="_blank">Nico的字符玩具</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://game.ikuvn.com/" title="Nico的游戏主页" target="_blank">Nico的游戏主页</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.abby.md/" title="Abby的博客主页" target="_blank">Abby的博客主页</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-cloud-gateway介绍"><span class="nav-number">1.</span> <span class="nav-text">¶Spring Cloud Gateway介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-cloud-gateway-配置"><span class="nav-number">2.</span> <span class="nav-text">¶Spring Cloud Gateway 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#maven"><span class="nav-number">2.0.1.</span> <span class="nav-text">¶Maven</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#yml"><span class="nav-number">2.0.2.</span> <span class="nav-text">¶Yml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#java-config"><span class="nav-number">2.0.3.</span> <span class="nav-text">¶Java Config</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-cloud-gateway使用"><span class="nav-number">3.</span> <span class="nav-text">¶Spring Cloud Gateway使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#route"><span class="nav-number">3.0.1.</span> <span class="nav-text">¶Route</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#predicate"><span class="nav-number">3.0.2.</span> <span class="nav-text">¶Predicate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#filter"><span class="nav-number">3.0.3.</span> <span class="nav-text">¶Filter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-cloud-gateway-工作原理"><span class="nav-number">4.</span> <span class="nav-text">¶Spring Cloud Gateway 工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-cloud-gateway-总结"><span class="nav-number">5.</span> <span class="nav-text">¶Spring Cloud Gateway 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">6.</span> <span class="nav-text">¶相关文档</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nico</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  豫ICP备 -
+  <a href="http://www.miitbeian.gov.cn/">16030833号-2</a>
+  
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

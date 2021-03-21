@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="连接池,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="¶连接池的使命！ 无论是线程池还是db连接池，他们都有一个共同的特性：资源复用，在普通的场景中，我们使用一个连接，它的生命周期可能是这样的：  一个连接，从创建完毕到销毁，期间只被使用了一次（这里的一次是指在单个作用域内的使用），当周期结束，另外一个调用者仍然需要这个连接去做事，就要重复去经历这种生命周期。因为创建和销毁都是需要对应的服务消耗时间以及系统资源去处理的，这样不仅浪费了大量的系统资源，">
+<meta name="keywords" content="连接池">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何设计并实现一个db连接池？">
+<meta property="og:url" content="http://yoursite.com/2019/05/26/如何设计并实现一个db连接池？/index.html">
+<meta property="og:site_name" content="Nico&#39;s Blog">
+<meta property="og:description" content="¶连接池的使命！ 无论是线程池还是db连接池，他们都有一个共同的特性：资源复用，在普通的场景中，我们使用一个连接，它的生命周期可能是这样的：  一个连接，从创建完毕到销毁，期间只被使用了一次（这里的一次是指在单个作用域内的使用），当周期结束，另外一个调用者仍然需要这个连接去做事，就要重复去经历这种生命周期。因为创建和销毁都是需要对应的服务消耗时间以及系统资源去处理的，这样不仅浪费了大量的系统资源，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/5/24/16ae8d822d4ac11e?w=637&h=168&f=png&s=4758">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/5/24/16ae8fb43b0a3d13?w=588&h=377&f=png&s=13088">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/5/26/16af28f6f668a3e6?w=754&h=845&f=png&s=66582">
+<meta property="og:updated_time" content="2019-05-26T05:43:55.249Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何设计并实现一个db连接池？">
+<meta name="twitter:description" content="¶连接池的使命！ 无论是线程池还是db连接池，他们都有一个共同的特性：资源复用，在普通的场景中，我们使用一个连接，它的生命周期可能是这样的：  一个连接，从创建完毕到销毁，期间只被使用了一次（这里的一次是指在单个作用域内的使用），当周期结束，另外一个调用者仍然需要这个连接去做事，就要重复去经历这种生命周期。因为创建和销毁都是需要对应的服务消耗时间以及系统资源去处理的，这样不仅浪费了大量的系统资源，">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/5/24/16ae8d822d4ac11e?w=637&h=168&f=png&s=4758">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/26/如何设计并实现一个db连接池？/">
+
+
+
+
+
+  <title>如何设计并实现一个db连接池？ | Nico's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Nico's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">兴趣使然的Coder</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/26/如何设计并实现一个db连接池？/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何设计并实现一个db连接池？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-26T13:42:00+08:00">
+                2019-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="连接池的使命"><a class="header-anchor" href="#连接池的使命">¶</a>连接池的使命！</h2>
+<p>无论是线程池还是db连接池，他们都有一个共同的特性：<strong>资源复用</strong>，在普通的场景中，我们使用一个连接，它的生命周期可能是这样的：<br>
+<img src="https://user-gold-cdn.xitu.io/2019/5/24/16ae8d822d4ac11e?w=637&amp;h=168&amp;f=png&amp;s=4758" alt><br>
+一个连接，从创建完毕到销毁，期间只被使用了一次（这里的一次是指在单个作用域内的使用），当周期结束，另外一个调用者仍然需要这个连接去做事，就要重复去经历这种生命周期。因为创建和销毁都是需要对应的服务消耗时间以及系统资源去处理的，这样不仅浪费了大量的系统资源，而且导致业务响应过程中都要花费部分时间去重复的创建和销毁，得不偿失，而连接池便被赋予了解决这种问题的使命！</p>
+<h2 id="连接池需要做什么？"><a class="header-anchor" href="#连接池需要做什么？">¶</a>连接池需要做什么？</h2>
+<p>顾名思义，连接池中的<strong>池</strong>字已经很生动形象的阐明了它的用意，它用将所有连接放入一个<code>&quot;池子&quot;</code>中统一的去控制连接的创建和销毁，和原始生命周期去对比，连接池多了以下特性：</p>
+<ul>
+<li>创建并不是真的创建，而是从池子中选出空闲连接。</li>
+<li>销毁并不是真的销毁，而是将使用中的连接放回池中（逻辑关闭）。</li>
+<li>真正的创建和销毁由线程池的特性机制来决定。</li>
+</ul>
+<p>因此，当使用连接池后，我们使用一个连接的生命周期将会演变成这样：<br>
+<img src="https://user-gold-cdn.xitu.io/2019/5/24/16ae8fb43b0a3d13?w=588&amp;h=377&amp;f=png&amp;s=13088" alt></p>
+<h2 id="分析计划"><a class="header-anchor" href="#分析计划">¶</a>分析计划</h2>
+<p>通灵之术 - 传送门：<a href="https://github.com/ainilili/honeycomb" target="_blank" rel="noopener">https://github.com/ainilili/honeycomb</a>，DEMO为Java语言实现！</p>
+<p>事前，我们需要点支烟分析一下时间一个连接池需要做哪些事情：</p>
+<ul>
+<li>保存连接的容器是必不可少的，另外，该容器也要支持连接的添加和移除功能，并保证线程安全。</li>
+<li>我们需要因为要对连接的销毁做逻辑调整，我们需要重写它的<code>close</code>以及<code>isClosed</code>方法。</li>
+<li>我们需要有个入口对连接池做管理，例如回收空闲连接。</li>
+</ul>
+<p>连接池不仅仅只是对<code>Connection</code>生命周期的控制，还应该加入一些特色，例如初始连接数，最大连接数，最小连接数、最大空闲时长以及获取连接的等待时长，这些我们也简单支持一下。</p>
+<p>目标以明确，开始动工。</p>
+<h3 id="连接池容器选型"><a class="header-anchor" href="#连接池容器选型">¶</a>连接池容器选型</h3>
+<p>要保证线程安全，我们可以将目标瞄准在<code>JUC</code>包下的神通们，设我们想要的容器为<code>x</code>，那么<code>x</code>不仅需要满足基本的增删改查功能，而且也要提供获取超时功能，这是为了保证当池内长时间没有空闲连接时不会导致业务阻塞，即刻熔断。另外，<code>x</code>需要满足双向操作，这是为了连接池可以识别出饱和的空闲连接，方便回收操作。</p>
+<p>综上所述，<code>LinkedBlockingDeque</code>是最合适的选择，它使用<code>InterruptibleReentrantLock</code>来保证线程安全，使用<code>Condition</code>来做获取元素的阻塞，另外支持双向操作。</p>
+<p>另外，我们可以将连接池拆分为3个类型：</p>
+<ul>
+<li><strong>工作池</strong>：存放正在被使用的连接。</li>
+<li><strong>空闲池</strong>：存放空闲连接。</li>
+<li><strong>回收池</strong>：已经被回收（物理关闭）的连接。</li>
+</ul>
+<p>其中，<strong>工作池</strong>和<strong>回收池</strong>大可不必用双向对列，或许用单向队列或者<code>Set</code>都可以代替之：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> LinkedBlockingQueue&lt;HoneycombConnection&gt; workQueue;</span><br><span class="line"><span class="keyword">private</span> LinkedBlockingDeque&lt;HoneycombConnection&gt; idleQueue;</span><br><span class="line"><span class="keyword">private</span> LinkedBlockingQueue&lt;HoneycombConnection&gt; freezeQueue;</span><br></pre></td></tr></table></figure>
+<h3 id="connection的装饰"><a class="header-anchor" href="#connection的装饰">¶</a>Connection的装饰</h3>
+<p>连接池的输出是<code>Connection</code>，它代表着一个db连接，上游服务使用它做完操作后，会直接调用它的<code>close</code>方法来释放连接，而我们必须做的是在调用者无感知的情况下改变它的关闭逻辑，当调用<code>close</code>的方法时，我们将它放回空闲队列中，保证其的可复用性！</p>
+<p>因此，我们需要对原来的<code>Connection</code>做装饰，其做法很简单，但是很累，这里新建一个类来实现<code>Connection</code>接口，通过重写所有的方法来实现一个**“可编辑”**的<code>Connection</code>，我们称之为<code>Connection</code>的装饰者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HoneycombConnectionDecorator</span> <span class="keyword">implements</span> <span class="title">Connection</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> Connection connection;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">HoneycombConnectionDecorator</span><span class="params">(Connection connection)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.connection = connection;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    此处省略对方法实现的三百行代码...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后，我们需要新建一个自己的<code>Connection</code>来继承这个装饰者，并重写相应的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HoneycombConnection</span> <span class="keyword">extends</span> <span class="title">HoneycombConnectionDecorator</span> <span class="keyword">implements</span> <span class="title">HoneycombConnectionSwitcher</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123; <span class="keyword">do</span> some things &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isClosed</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123; <span class="keyword">do</span> some things &#125;    </span><br><span class="line">    </span><br><span class="line">    省略...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="datasource的重写"><a class="header-anchor" href="#datasource的重写">¶</a>DataSource的重写</h3>
+<p><code>DataSource</code>是JDK为了更好的统合和管理数据源而定义出的一个规范，获取连接的入口，方便我们在这一层更好的扩展数据源（例如增加特殊属性），使我们的连接池的功能更加丰富，我们需要实现一个自己的<code>DataSource</code>能：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HoneycombWrapperDatasource</span> <span class="keyword">implements</span> <span class="title">DataSource</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> HoneycombDatasourceConfig config;</span><br><span class="line">    省略其它方法的实现...</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPassword());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">(String username, String password)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DriverManager.getConnection(config.getUrl(), username, password);</span><br><span class="line">    &#125;</span><br><span class="line">    省略其它方法的实现...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们完成了对数据源的实现，但是这里获取连接的方式是物理创建，我们需要满足池化的目的，需要重写<code>HoneycombWrapperDatasource</code>中的连接获取逻辑，做法是创建一个新的类对父类方法重写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HoneycombDataSource</span> <span class="keyword">extends</span> <span class="title">HoneycombWrapperDatasource</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> HoneycombConnectionPool pool;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">        这里实现从pool中取出连接的逻辑</span><br><span class="line">    &#125;</span><br><span class="line">    省略...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="特性扩展"><a class="header-anchor" href="#特性扩展">¶</a>特性扩展</h3>
+<p>在当前结构体系下，我们的连接池逐渐浮现出了雏形，但远远不够的是，我们需要在此结构下可以做自由的扩展，使连接池对连接的控制更加灵活，因此我们可以引入<strong>特性</strong>这个概念，它允许我们在其内部访问连接池，并对连接池做一系列的扩展操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractFeature</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">doing</span><span class="params">(HoneycombConnectionPool pool)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>AbstractFeature</code>抽象父类需要实现<code>doing</code>方法，我们可以在方法内部实现对连接池的控制，其中一个典型的例子就是对池中空闲连接左回收：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleanerFeature</span> <span class="keyword">extends</span> <span class="title">AbstractFeature</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doing</span><span class="params">(HoneycombConnectionPool pool)</span> </span>&#123;</span><br><span class="line">        这里做空闲连接的回收</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="落实计划"><a class="header-anchor" href="#落实计划">¶</a>落实计划</h2>
+<p>经过上述分析，要完成一个连接池，需要这些模块的配合，总体流程如下：<br>
+<img src="https://user-gold-cdn.xitu.io/2019/5/26/16af28f6f668a3e6?w=754&amp;h=845&amp;f=png&amp;s=66582" alt></p>
+<h3 id="第一步：设置数据源属性"><a class="header-anchor" href="#第一步：设置数据源属性">¶</a>第一步：设置数据源属性</h3>
+<p>在初始化<code>DataSource</code>之前，我们需要将各属性设置进去，这里使用<code>HoneycombWrapperDatasource</code>中的<code>HoneycombDatasourceConfig</code>来承载各属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HoneycombDatasourceConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//db url</span></span><br><span class="line">    <span class="keyword">private</span> String url;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//db user</span></span><br><span class="line">    <span class="keyword">private</span> String user;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//db password</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//driver驱动</span></span><br><span class="line">    <span class="keyword">private</span> String driver;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//初始化连接数，默认为2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> initialPoolSize = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//最大连接数，默认为10</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxPoolSize = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//最小连接数，默认为2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> minPoolSize = <span class="number">2</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取连接时，最大等待时长，默认为60s</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> maxWaitTime = <span class="number">60</span> * <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//最大空闲时长，超出要被回收，默认为20s</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> maxIdleTime = <span class="number">20</span> * <span class="number">1000</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//特性列表</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;AbstractFeature&gt; features;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HoneycombDatasourceConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        features = <span class="keyword">new</span> ArrayList&lt;AbstractFeature&gt;(<span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    省略getter、setter....</span><br></pre></td></tr></table></figure>
+<h3 id="第二步：初始化连接池"><a class="header-anchor" href="#第二步：初始化连接池">¶</a>第二步：初始化连接池</h3>
+<p>设置好属性之后，我们需要完成连接池的初始化工作，在<code>HoneycombDataSource</code>的<code>init</code>方法中实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> ClassNotFoundException, SQLException </span>&#123;</span><br><span class="line">    <span class="comment">//阻塞其他线程初始化操作，等待初始化完成</span></span><br><span class="line">    <span class="keyword">if</span>(initialStarted || ! (initialStarted = ! initialStarted)) &#123;</span><br><span class="line">        <span class="keyword">if</span>(! initialFinished) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                INITIAL_LOCK.lock();</span><br><span class="line">                INITIAL_CONDITION.await();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                INITIAL_LOCK.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//config参数校验</span></span><br><span class="line">    config.assertSelf();</span><br><span class="line">    </span><br><span class="line">    Class.forName(getDriver());</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//实例化线程池</span></span><br><span class="line">    pool = <span class="keyword">new</span> HoneycombConnectionPool(config);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//初始化最小连接</span></span><br><span class="line">    Integer index = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; config.getInitialPoolSize(); i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span>((index =  pool.applyIndex()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            pool.putLeisureConnection(createNativeConnection(pool), index);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//触发特性</span></span><br><span class="line">    pool.touchFeatures();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//完成初始化并唤醒其他阻塞</span></span><br><span class="line">    initialFinished = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        INITIAL_LOCK.lock();</span><br><span class="line">        INITIAL_CONDITION.signalAll();</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        INITIAL_LOCK.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第三步：创建初始连接"><a class="header-anchor" href="#第三步：创建初始连接">¶</a>第三步：创建初始连接</h3>
+<p>在<code>init</code>的方法中，如果<code>initialPoolSize</code>大于0，会去创建指定数量的物理连接放入连接池中，创建数量要小于最大连接数<code>maxPoolSize</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> HoneycombConnection <span class="title">createNativeConnection</span><span class="params">(HoneycombConnectionPool pool)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> HoneycombConnection(<span class="keyword">super</span>.getConnection(), pool);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完成初始化后，下一步就是获取连接。</p>
+<h3 id="第四步：从空闲池获取"><a class="header-anchor" href="#第四步：从空闲池获取">¶</a>第四步：从空闲池获取</h3>
+<p>我们之前将连接池分成了三个，它们分别是<strong>空闲池</strong>、<strong>工作池</strong>和<strong>回收池</strong>。</p>
+<p>我们可以通过<code>HoneycombDataSource</code>的<code>getConnection</code>方法来获取连接，当我们需要获取时，首先考虑的是空闲池是否有空闲连接，这样可以避免创建和激活新的连接：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    	<span class="comment">//初始化连接池</span></span><br><span class="line">        init();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    HoneycombConnection cn = <span class="keyword">null</span>;</span><br><span class="line">    Integer index = <span class="keyword">null</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(pool.assignable()) &#123;</span><br><span class="line">    	<span class="comment">//空闲池可分配，从空闲池取出</span></span><br><span class="line">        cn = pool.getIdleConnection();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pool.actionable()) &#123;</span><br><span class="line">    	<span class="comment">//回收池可分配，从回收池取出</span></span><br><span class="line">        cn = pool.getFreezeConnection();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>((index =  pool.applyIndex()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    	<span class="comment">//如果连接数未满，创建新的物理连接</span></span><br><span class="line">        cn = pool.putOccupiedConnection(createNativeConnection(pool), index);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(cn == <span class="keyword">null</span>) &#123;</span><br><span class="line">    	<span class="comment">//如果无法获取连接，阻塞等待空闲池连接</span></span><br><span class="line">        cn = pool.getIdleConnection();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(cn.isClosedActive()) &#123;</span><br><span class="line">    	<span class="comment">//如果物理连接关闭，则获取新的连接</span></span><br><span class="line">        cn.setConnection(<span class="keyword">super</span>.getConnection());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第五步：从回收池获取"><a class="header-anchor" href="#第五步：从回收池获取">¶</a>第五步：从回收池获取</h3>
+<p>如果空闲池不可分配，那么说明连接供不应求，也许之前有些空闲连接已经被回收（物理关闭），那么我们在创建新连接之前，可以到回收池看一下是否存在已回收连接，如果存在直接取出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(pool.actionable()) &#123;</span><br><span class="line">	<span class="comment">//回收池可分配，从回收池取出</span></span><br><span class="line">    cn = pool.getFreezeConnection();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第六步：创建新的连接"><a class="header-anchor" href="#第六步：创建新的连接">¶</a>第六步：创建新的连接</h3>
+<p>如果回收池也不可分配，此时要判断连接池连接数量是否已经达到最大连接，如果没有达到，创建新的物理连接并直接添加到工作池中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>((index =  pool.applyIndex()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">//如果连接数未满，创建新的物理连接，添加到工作池</span></span><br><span class="line">    cn = pool.putOccupiedConnection(createNativeConnection(pool), index);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第七步：等待空闲池的连接"><a class="header-anchor" href="#第七步：等待空闲池的连接">¶</a>第七步：等待空闲池的连接</h3>
+<p>如果上述三种情况都不满足，那么只能从空闲池等待其他连接的释放：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(cn == <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">//如果无法获取连接，阻塞等待空闲池连接</span></span><br><span class="line">    cn = pool.getIdleConnection();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体逻辑封装在<code>HoneycombConnectionPool</code>的<code>getIdleConnection</code>方法中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> HoneycombConnection <span class="title">getIdleConnection</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    	<span class="comment">//获取最大等待时间</span></span><br><span class="line">        <span class="keyword">long</span> waitTime = config.getMaxWaitTime();</span><br><span class="line">        <span class="keyword">while</span>(waitTime &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">long</span> beginPollNanoTime = System.nanoTime();</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//设置超时时间，阻塞等待其他连接的释放</span></span><br><span class="line">            HoneycombConnection nc = idleQueue.poll(waitTime, TimeUnit.MILLISECONDS);</span><br><span class="line">            <span class="keyword">if</span>(nc != <span class="keyword">null</span>) &#123;</span><br><span class="line">            	<span class="comment">//状态转换</span></span><br><span class="line">                <span class="keyword">if</span>(nc.isClosed() &amp;&amp; nc.switchOccupied() &amp;&amp; working(nc)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> nc;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">long</span> timeConsuming = (System.nanoTime() - beginPollNanoTime) / (<span class="number">1000</span> * <span class="number">1000</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//也许在超时时间内获取到了连接，但是状态转换失败，此时刷新超时时间</span></span><br><span class="line">            waitTime -= timeConsuming;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"获取连接超时"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第八步：激活连接"><a class="header-anchor" href="#第八步：激活连接">¶</a>第八步：激活连接</h3>
+<p>最后，判断一下连接是否被物理关闭，如果是，我们需要打开新的连接替换已经被回收的连接：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(cn.isClosedActive()) &#123;</span><br><span class="line">	<span class="comment">//如果物理连接关闭，则获取新的连接</span></span><br><span class="line">    cn.setConnection(<span class="keyword">super</span>.getConnection());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="连接的回收"><a class="header-anchor" href="#连接的回收">¶</a>连接的回收</h3>
+<p>如果在某段时间内我们的业务量剧增，那么需要同时工作的连接将会很多，之后过了不久，我们的业务量下降，那么之前已经创建的连接明显饱和，这时就需要我们对其进行回收，我们可以通过<code>AbstractFeature</code>入口操作连接池。</p>
+<p>对于回收这个操作，我们通过<code>CleanerFeature</code>来实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleanerFeature</span> <span class="keyword">extends</span> <span class="title">AbstractFeature</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(CleanerFeature.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CleanerFeature</span><span class="params">(<span class="keyword">boolean</span> enable, <span class="keyword">long</span> interval)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//enable表示是否启用</span></span><br><span class="line">       <span class="comment">//interval表示扫描间隔</span></span><br><span class="line">       <span class="keyword">super</span>(enable, interval);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doing</span><span class="params">(HoneycombConnectionPool pool)</span> </span>&#123;</span><br><span class="line">        LinkedBlockingDeque&lt;HoneycombConnection&gt; idleQueue = pool.getIdleQueue();</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">//回收扫描间隔</span></span><br><span class="line">                    	Thread.sleep(interval);</span><br><span class="line">                        </span><br><span class="line">                    	<span class="comment">//回收时，空闲池上锁</span></span><br><span class="line">                        <span class="keyword">synchronized</span> (idleQueue) &#123;</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Start &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                            <span class="comment">//回收操作</span></span><br><span class="line">                            idleQueue.stream().filter(c -&gt; &#123; <span class="keyword">return</span> c.idleTime() &gt; pool.getConfig().getMaxIdleTime(); &#125;).forEach(c -&gt; &#123;</span><br><span class="line">                                <span class="keyword">try</span> &#123;</span><br><span class="line">                                    <span class="keyword">if</span>(! c.isClosedActive() &amp;&amp; c.idle()) &#123;</span><br><span class="line">                                        c.closeActive();</span><br><span class="line">                                        pool.freeze(c);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                                    e.printStackTrace();</span><br><span class="line">                                &#125; </span><br><span class="line">                            &#125;);</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Finished &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;<span class="keyword">catch</span>(Throwable e) &#123;</span><br><span class="line">                        logger.error(<span class="string">"Cleaner happended error"</span>, e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        t.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">        t.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的操作很简单，对空闲池加锁，扫描所有连接，释放空闲时间超过最大空闲时间设置的连接，其实这里只要知道当前连接的空闲时长就一目了然了，我们在连接放入空闲池时候去刷新他的空闲时间点，那么当前的空闲时长就等于当前时间减去空闲开始时间：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">idleTime = nowTime - idleStartTime</span><br></pre></td></tr></table></figure>
+<p>在切换状态为空闲时刷新空闲开始时间：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">switchIdle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapObject(<span class="keyword">this</span>, statusOffset, status, ConnectionStatus.IDLE) &amp;&amp; flushIdleStartTime();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="测试一下"><a class="header-anchor" href="#测试一下">¶</a>测试一下</h2>
+<p>体验成果的最快途径就是投入使用，这里搞一个单元测试体验一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> ThreadPoolExecutor tpe = <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1000</span>, <span class="number">1000</span>, <span class="number">0</span>, TimeUnit.MILLISECONDS, <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">    </span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testConcurrence</span><span class="params">()</span> <span class="keyword">throws</span> SQLException, InterruptedException</span>&#123;</span><br><span class="line">    <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">    HoneycombDataSource dataSource = <span class="keyword">new</span> HoneycombDataSource();</span><br><span class="line">    dataSource.setUrl(<span class="string">"jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;transformedBitIsBoolean=true&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;serverTimezone=Asia/Shanghai"</span>);</span><br><span class="line">    dataSource.setUser(<span class="string">"root"</span>);</span><br><span class="line">    dataSource.setPassword(<span class="string">"root"</span>);</span><br><span class="line">    dataSource.setDriver(<span class="string">"com.mysql.cj.jdbc.Driver"</span>);</span><br><span class="line">    dataSource.setMaxPoolSize(<span class="number">50</span>);</span><br><span class="line">    dataSource.setInitialPoolSize(<span class="number">10</span>);</span><br><span class="line">    dataSource.setMinPoolSize(<span class="number">10</span>);</span><br><span class="line">    dataSource.setMaxWaitTime(<span class="number">60</span> * <span class="number">1000</span>);</span><br><span class="line">    dataSource.setMaxIdleTime(<span class="number">10</span> * <span class="number">1000</span>);</span><br><span class="line">    dataSource.addFeature(<span class="keyword">new</span> CleanerFeature(<span class="keyword">true</span>, <span class="number">5</span> * <span class="number">1000</span>));</span><br><span class="line">    </span><br><span class="line">    test(dataSource, <span class="number">10000</span>);</span><br><span class="line">    System.out.println(System.currentTimeMillis() - start + <span class="string">" ms"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(DataSource dataSource, <span class="keyword">int</span> count)</span> <span class="keyword">throws</span> SQLException, InterruptedException </span>&#123;</span><br><span class="line">    CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(count);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i ++) &#123;</span><br><span class="line">        tpe.execute(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                HoneycombConnection connection = (HoneycombConnection) dataSource.getConnection();</span><br><span class="line">                Statement s = connection.createStatement();</span><br><span class="line">                s.executeQuery(<span class="string">"select * from test limit 1"</span>);</span><br><span class="line">                connection.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                cdl.countDown();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    cdl.await();</span><br><span class="line">    tpe.shutdown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PC配置：<strong>Intel® Core™ i5-8300H CPU @ 2.30GHz 2.30 GHz 4核8G 512SSD</strong></p>
+<p>10000次查询，耗时：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">938</span> ms</span><br></pre></td></tr></table></figure>
+<p>结束语：再次召唤传送门：<a href="https://github.com/ainilili/honeycomb" target="_blank" rel="noopener">https://github.com/ainilili/honeycomb</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/连接池/" rel="tag"># 连接池</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/25/深入JAVA8的HashMap实现原理/" rel="next" title="深入JAVA8的HashMap实现原理">
+                <i class="fa fa-chevron-left"></i> 深入JAVA8的HashMap实现原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4" alt="Nico">
+            
+              <p class="site-author-name" itemprop="name">Nico</p>
+              <p class="site-description motion-element" itemprop="description">我是Nico，梦想是做一名兴趣使然的码农，于是我一步步变强，后来我成为了光头</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ainilili" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://study.ikuvn.com/" title="Nico的学习历程" target="_blank">Nico的学习历程</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://byte.ikuvn.com/" title="Nico的字符玩具" target="_blank">Nico的字符玩具</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://game.ikuvn.com/" title="Nico的游戏主页" target="_blank">Nico的游戏主页</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.abby.md/" title="Abby的博客主页" target="_blank">Abby的博客主页</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#连接池的使命"><span class="nav-number">1.</span> <span class="nav-text">¶连接池的使命！</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接池需要做什么？"><span class="nav-number">2.</span> <span class="nav-text">¶连接池需要做什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析计划"><span class="nav-number">3.</span> <span class="nav-text">¶分析计划</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接池容器选型"><span class="nav-number">3.1.</span> <span class="nav-text">¶连接池容器选型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#connection的装饰"><span class="nav-number">3.2.</span> <span class="nav-text">¶Connection的装饰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#datasource的重写"><span class="nav-number">3.3.</span> <span class="nav-text">¶DataSource的重写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特性扩展"><span class="nav-number">3.4.</span> <span class="nav-text">¶特性扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#落实计划"><span class="nav-number">4.</span> <span class="nav-text">¶落实计划</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步：设置数据源属性"><span class="nav-number">4.1.</span> <span class="nav-text">¶第一步：设置数据源属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步：初始化连接池"><span class="nav-number">4.2.</span> <span class="nav-text">¶第二步：初始化连接池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步：创建初始连接"><span class="nav-number">4.3.</span> <span class="nav-text">¶第三步：创建初始连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步：从空闲池获取"><span class="nav-number">4.4.</span> <span class="nav-text">¶第四步：从空闲池获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第五步：从回收池获取"><span class="nav-number">4.5.</span> <span class="nav-text">¶第五步：从回收池获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第六步：创建新的连接"><span class="nav-number">4.6.</span> <span class="nav-text">¶第六步：创建新的连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第七步：等待空闲池的连接"><span class="nav-number">4.7.</span> <span class="nav-text">¶第七步：等待空闲池的连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第八步：激活连接"><span class="nav-number">4.8.</span> <span class="nav-text">¶第八步：激活连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接的回收"><span class="nav-number">4.9.</span> <span class="nav-text">¶连接的回收</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试一下"><span class="nav-number">5.</span> <span class="nav-text">¶测试一下</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nico</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  豫ICP备 -
+  <a href="http://www.miitbeian.gov.cn/">16030833号-2</a>
+  
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
