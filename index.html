@@ -233,6 +233,152 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/22/Kick-Start-Round-A-2021-K-Goodness-String/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/Kick-Start-Round-A-2021-K-Goodness-String/" itemprop="url">Kick Start Round A 2021 -  K-Goodness String</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T02:37:00+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>原题地址: <a href="https://codingcompetitions.withgoogle.com/kickstart/round/0000000000436140/000000000068cca3#problem" target="_blank" rel="noopener">传送门</a></p>
+<h3 id="分析"><a class="header-anchor" href="#分析">¶</a>分析</h3>
+<p>题意大概是当字符串对称位置的字母如果不相同则score加一分，输入字符串以及期望的score分数，求将当前字符串变动任意位置的字母使之score等于期望的socre。</p>
+<p>其实就是求字符串对称位置字符不相同的数量，然后和期望score做差再取abs。</p>
+<h3 id="slove"><a class="header-anchor" href="#slove">¶</a>Slove</h3>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bufio"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">var</span> in = bufio.NewReader(os.Stdin)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">solve</span><span class="params">()</span></span>&#123;</span><br><span class="line">	inputs := readInts(in)</span><br><span class="line">	n := inputs[<span class="number">0</span>]</span><br><span class="line">	k := inputs[<span class="number">1</span>]</span><br><span class="line">	str := readline(in)</span><br><span class="line">	s := <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(str); i++ &#123;</span><br><span class="line">		r := n - <span class="number">1</span> - i</span><br><span class="line">		<span class="keyword">if</span> r &lt;= i &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> str[i] != str[r] &#123;</span><br><span class="line">			s ++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	result := k - s</span><br><span class="line">	<span class="keyword">if</span> result &lt; <span class="number">0</span>&#123;</span><br><span class="line">		result = - result</span><br><span class="line">	&#125;</span><br><span class="line">	res = <span class="built_in">append</span>(res, result)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	t := readInts(in)[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t; i ++ &#123;</span><br><span class="line">		solve()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> res &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Case #%d: %d\n"</span>, i + <span class="number">1</span>, v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readline</span><span class="params">(in *bufio.Reader)</span> <span class="title">string</span></span>&#123;</span><br><span class="line">	line, _ := in.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">	<span class="keyword">return</span> line[<span class="number">0</span>:<span class="built_in">len</span>(line) - <span class="number">1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readInts</span><span class="params">(in *bufio.Reader)</span> []<span class="title">int</span></span>&#123;</span><br><span class="line">	line := readline(in)</span><br><span class="line">	arr := strings.Split(line, <span class="string">" "</span>)</span><br><span class="line">	res := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">for</span> _, str := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		v, _ := strconv.ParseInt(str, <span class="number">10</span>, <span class="number">64</span>)</span><br><span class="line">		res = <span class="built_in">append</span>(res, <span class="keyword">int</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/26/如何设计并实现一个db连接池？/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -388,7 +534,7 @@
 <h3 id="连接的回收"><a class="header-anchor" href="#连接的回收">¶</a>连接的回收</h3>
 <p>如果在某段时间内我们的业务量剧增，那么需要同时工作的连接将会很多，之后过了不久，我们的业务量下降，那么之前已经创建的连接明显饱和，这时就需要我们对其进行回收，我们可以通过<code>AbstractFeature</code>入口操作连接池。</p>
 <p>对于回收这个操作，我们通过<code>CleanerFeature</code>来实现：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleanerFeature</span> <span class="keyword">extends</span> <span class="title">AbstractFeature</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(CleanerFeature.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CleanerFeature</span><span class="params">(<span class="keyword">boolean</span> enable, <span class="keyword">long</span> interval)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//enable表示是否启用</span></span><br><span class="line">       <span class="comment">//interval表示扫描间隔</span></span><br><span class="line">       <span class="keyword">super</span>(enable, interval);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doing</span><span class="params">(HoneycombConnectionPool pool)</span> </span>&#123;</span><br><span class="line">        LinkedBlockingDeque&lt;HoneycombConnection&gt; idleQueue = pool.getIdleQueue();</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">//回收扫描间隔</span></span><br><span class="line">                    	Thread.sleep(interval);</span><br><span class="line">                        </span><br><span class="line">                    	<span class="comment">//回收时，空闲池上锁</span></span><br><span class="line">                        <span class="keyword">synchronized</span> (idleQueue) &#123;</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Start &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                            <span class="comment">//回收操作</span></span><br><span class="line">                            idleQueue.stream().filter(c -&gt; &#123; <span class="keyword">return</span> c.idleTime() &gt; pool.getConfig().getMaxIdleTime(); &#125;).forEach(c -&gt; &#123;</span><br><span class="line">                                <span class="keyword">try</span> &#123;</span><br><span class="line">                                    <span class="keyword">if</span>(! c.isClosedActive() &amp;&amp; c.idle()) &#123;</span><br><span class="line">                                        c.closeActive();</span><br><span class="line">                                        pool.freeze(c);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                                    e.printStackTrace();</span><br><span class="line">                                &#125; </span><br><span class="line">                            &#125;);</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Finished &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;<span class="keyword">catch</span>(Throwable e) &#123;</span><br><span class="line">                        logger.error(<span class="string">"Cleaner happended error"</span>, e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        t.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">        t.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleanerFeature</span> <span class="keyword">extends</span> <span class="title">AbstractFeature</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(CleanerFeature<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CleanerFeature</span><span class="params">(<span class="keyword">boolean</span> enable, <span class="keyword">long</span> interval)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//enable表示是否启用</span></span><br><span class="line">       <span class="comment">//interval表示扫描间隔</span></span><br><span class="line">       <span class="keyword">super</span>(enable, interval);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doing</span><span class="params">(HoneycombConnectionPool pool)</span> </span>&#123;</span><br><span class="line">        LinkedBlockingDeque&lt;HoneycombConnection&gt; idleQueue = pool.getIdleQueue();</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">//回收扫描间隔</span></span><br><span class="line">                    	Thread.sleep(interval);</span><br><span class="line">                        </span><br><span class="line">                    	<span class="comment">//回收时，空闲池上锁</span></span><br><span class="line">                        <span class="keyword">synchronized</span> (idleQueue) &#123;</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Start &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                            <span class="comment">//回收操作</span></span><br><span class="line">                            idleQueue.stream().filter(c -&gt; &#123; <span class="keyword">return</span> c.idleTime() &gt; pool.getConfig().getMaxIdleTime(); &#125;).forEach(c -&gt; &#123;</span><br><span class="line">                                <span class="keyword">try</span> &#123;</span><br><span class="line">                                    <span class="keyword">if</span>(! c.isClosedActive() &amp;&amp; c.idle()) &#123;</span><br><span class="line">                                        c.closeActive();</span><br><span class="line">                                        pool.freeze(c);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                                    e.printStackTrace();</span><br><span class="line">                                &#125; </span><br><span class="line">                            &#125;);</span><br><span class="line">                            logger.debug(<span class="string">"Cleaner Model To Finished &#123;&#125;"</span>, idleQueue.size());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;<span class="keyword">catch</span>(Throwable e) &#123;</span><br><span class="line">                        logger.error(<span class="string">"Cleaner happended error"</span>, e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        t.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">        t.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里的操作很简单，对空闲池加锁，扫描所有连接，释放空闲时间超过最大空闲时间设置的连接，其实这里只要知道当前连接的空闲时长就一目了然了，我们在连接放入空闲池时候去刷新他的空闲时间点，那么当前的空闲时长就等于当前时间减去空闲开始时间：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">idleTime = nowTime - idleStartTime</span><br></pre></td></tr></table></figure>
 <p>在切换状态为空闲时刷新空闲开始时间：</p>
@@ -1065,6 +1211,277 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/深入浅说服务如何以Jar包的方式发布/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/深入浅说服务如何以Jar包的方式发布/" itemprop="url">深入浅说服务如何以Jar包的方式发布</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:49:00+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h6 id="序言"><a class="header-anchor" href="#序言">¶</a>序言</h6>
+<p>笔者前段时间在使用自研框架NF( <a href="https://gitee.com/ainilili/No-Framework" target="_blank" rel="noopener">传送门</a> )开发一个自动模板生成工具之后，想将他发布到Linux下，之前一直使用IDE直接<code>run as</code>运行，在遇到发布的时候考虑过发布为war或者jar，在一番抉择之后最终选择了jar（原因是NF自带服务容器，而war为tomcat而生，所以jar更适合NF），所以特意研究了一番如何将普通项目打包成jar发布。</p>
+<p>不出意外，最终我成功了，在兴奋之余，希望能够将自己实现的过程及遇到的坑记录下来，让看到有此需求的同学们少走一些弯路！</p>
+<h4 id="一-何为jar"><a class="header-anchor" href="#一-何为jar">¶</a>一、何为Jar</h4>
+<p>JAR 文件格式以流行的 ZIP 文件格式为基础。与 ZIP 文件不同的是，JAR 文件不仅用于压缩和发布，而且还用于部署和封装库、组件和插件程序，并可被像编译器和 JVM 这样的工具直接使用。在 JAR 中包含特殊的文件，如 manifests 和部署描述符，用来指示工具如何处理特定的 JAR。</p>
+<p>更多详情通过 <a href="https://www.ibm.com/developerworks/cn/java/j-jar/index.html" target="_blank" rel="noopener">传送门</a> 查阅。</p>
+<h4 id="二-发布服务的几种方案"><a class="header-anchor" href="#二-发布服务的几种方案">¶</a>二、发布服务的几种方案</h4>
+<p>在web开发完成之后，我们往往想要发布服务到外网服务器中，而外网服务器大多是都是Linux系统，这时我们不能已常规方式直接在IDE中运行，需要特定几种形式去发布。</p>
+<p>我们最初最常用的方式就是打包成<code>.war</code>的格式发布到Tomcat的服务容器中，这之后Tomcat会帮助我们解压war包，并加载<code>classes</code>文件夹下的<code>.class</code>到内存中，加载完毕之后，我们的服务就可以在服务器中正常运行，但是<code>.war</code>通常只适合配合Tomcat容器，对于其他服务容器，尤其是自研服务容器来讲，适用性非常差，而<code>Spring Boot</code>率先打破了常规。</p>
+<p>Spring Boot采用jar的方式发布，也就是说，我们可以使用Spring Boot提供的maven插件，通过<code>mvn package</code>指令将服务打包成jar的形式发布，这就意味着服务中涉及的所有资源（class文件、依赖jar包、静态资源文件）都将会打包在一个jar包之内，在启动这个层次来讲就异常的简单了，只需要通过<code>java -jar xxxx.jar</code>的方式就可以正常启动服务，这对于我们在自己的服务器中去启动服务来说非常的方便，而Spring Boot是怎么做到这一点的呢？</p>
+<p>我们来看一下Spring Boot的<code>pom.xml</code>依赖插件 <code>spring-boot-maven-plugin</code>，全配置如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;mainClass&gt;$&#123;start-class&#125;&lt;/mainClass&gt;</span><br><span class="line">    &lt;/configuration&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<p>我们通过之前对Jar包的了解已经得知，一个可执行jar的必要因素就是需要一个主函数入口，在上述配置中，我们可以看到很明确的主函数配置<code>&lt;mainClass&gt;${start-class}&lt;/mainClass&gt;</code>， 而占位符<code>${start-class}</code>的值就是我们平常开发中用来启动Spring Boot的主函数入口所在类，继续深入<code>spring-boot-maven-plugin</code>中，我们会看到这个插件内部依赖了更多maven自带的原生插件</p>
+<ul>
+<li>maven-failsafe-plugin</li>
+<li>maven-jar-plugin</li>
+<li>maven-surefire-plugin</li>
+<li>maven-war-plugin</li>
+<li>maven-resources-plugin</li>
+<li>maven-shade-plugin</li>
+</ul>
+<p>另外少部分插件如下</p>
+<ul>
+<li>exec-maven-plugin</li>
+<li>git-commit-id-plugin</li>
+<li>spring-boot-maven-plugin 自依赖，为了支持自己的插件</li>
+</ul>
+<p>从以上插件列表分析，<code>spring-boot-maven-plugin</code>中包含了很多maven原生插件，支持<code>jar</code>和 <code>war</code>的格式发布，我们只站在打包可执行jar的角度来分析以上插件的作用，可以这样理解</p>
+<ul>
+<li>maven-jar-plugin</li>
+</ul>
+<blockquote>
+<p>设定<code>manifest</code>中的<code>Main-Class</code>参数</p>
+</blockquote>
+<ul>
+<li>maven-shade-plugin</li>
+</ul>
+<blockquote>
+<p>用于把多个jar包，打成1个jar包</p>
+</blockquote>
+<ul>
+<li>maven-resources-plugin</li>
+</ul>
+<blockquote>
+<p>处理将项目资源（<code>src/main/</code>和 <code>src/test</code>）复制到输出目录的操作</p>
+</blockquote>
+<ul>
+<li>maven-surefire-plugin 和 maven-failsafe-plugin</li>
+</ul>
+<blockquote>
+<p>执行测试用例</p>
+</blockquote>
+<p>依赖插件的同时，<code>spring-boot-maven-plugin</code>中还使用<code>&lt;resources&gt;</code>标签来重新定义jar包内部结构。</p>
+<p>以上信息是否满足将我们的服务打包成可执行jar呢？我们分析一下，如果达到我们想要的效果，我们需要</p>
+<ol>
+<li>自动配置主函数入口</li>
+<li>静态资源打包</li>
+<li>依赖打包</li>
+</ol>
+<p>对比上述插件，我们需要的功能都有，那么我们是否可以使用上方的插件及标签自己写个打包插件试试呢？ 当然！这里就不带着大家亲自尝试了，因为下面我要讲另一种Spring Boot没有用到的maven插件进行打包！</p>
+<h4 id="三-maven-assembly-plugin-插件打包jar"><a class="header-anchor" href="#三-maven-assembly-plugin-插件打包jar">¶</a>三、maven-assembly-plugin 插件打包Jar</h4>
+<p><code>maven-assembly-plugin</code>是一个超灵活maven项目打包工具，提供默认配置和自定义配置，同时提供<code>Main-Class</code>的配置、静态文件Copy及依赖打包的功能，这里是官方对于这款插件的介绍</p>
+<blockquote>
+<p>The Assembly Plugin for Maven is primarily intended to allow users to aggregate the project output along with its dependencies, modules, site documentation, and other files into a single distributable archive.<br>
+Your project can build distribution “assemblies” easily, using one of the convenient, prefabricated assembly descriptors. These descriptors handle many common operations, such as packaging a project’s artifact along with generated documentation into a single zip archive. Alternatively, your project can provide its own descriptor and assume a much higher level of control over how dependencies, modules, file-sets, and individual files are packaged in the assembly.</p>
+</blockquote>
+<p>大概意思就是</p>
+<p>Maven的组装插件主要是允许用户将项目输出与它的依赖项、模块、站点文档和其他文件一起集成到一个可分发的归档文件中。您的项目可以使用一种方便的预制组装描述符轻松地构建分布“程序集”。这些描述符处理许多常见的操作，例如将项目的工件连同生成的文档打包到一个zip归档文件中。或者，您的项目可以提供自己的描述符，并对依赖项、模块、文件集和各个文件如何在程序集中打包具有更高的控制级别。</p>
+<p>通俗一点，你可以自定义你的项目打包格式，<code>maven-assembly-plugin</code>更像是多个打包插件的集成，并提供多种打包的文件格式，使用方面也很方便，最简单的一个使用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	   &lt;artifactId&gt; maven-assembly-plugin &lt;/artifactId&gt;</span><br><span class="line">	   &lt;configuration&gt;</span><br><span class="line">			&lt;descriptorRefs&gt;</span><br><span class="line">				 &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">			&lt;/descriptorRefs&gt;</span><br><span class="line">			&lt;archive&gt;</span><br><span class="line">				 &lt;manifest&gt;</span><br><span class="line">					  &lt;mainClass&gt;$&#123;main-class&#125;&lt;/mainClass&gt;</span><br><span class="line">				 &lt;/manifest&gt;</span><br><span class="line">			&lt;/archive&gt;</span><br><span class="line">	   &lt;/configuration&gt;</span><br><span class="line">	   &lt;executions&gt;</span><br><span class="line">			&lt;execution&gt;</span><br><span class="line">				 &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">				 &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">				 &lt;goals&gt;</span><br><span class="line">					  &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">				 &lt;/goals&gt;</span><br><span class="line">			&lt;/execution&gt;</span><br><span class="line">	   &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<p><code>descriptorRefs</code>标签内部可以配置使用官方定制好的打包方式，其中如下可选配置</p>
+<ul>
+<li>bin</li>
+<li>jar-with-dependencies</li>
+<li>src</li>
+<li>project<br>
+不过官方定制好的有很大的局限性，我们可以将上述改成如下配置，来自定义打包方式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	&lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">	&lt;configuration&gt;</span><br><span class="line">		&lt;archive&gt;</span><br><span class="line">			&lt;manifest&gt;</span><br><span class="line">				&lt;mainClass&gt;$&#123;main-class&#125;&lt;/mainClass&gt;</span><br><span class="line">			&lt;/manifest&gt;</span><br><span class="line">		&lt;/archive&gt;</span><br><span class="line">		&lt;descriptors&gt;</span><br><span class="line">            &lt;descriptor&gt;src/main/resource/assembly-fat.xml&lt;/descriptor&gt;</span><br><span class="line">        &lt;/descriptors&gt;</span><br><span class="line">	&lt;/configuration&gt;</span><br><span class="line">	&lt;executions&gt;</span><br><span class="line">         &lt;execution&gt;</span><br><span class="line">               &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">               &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">               &lt;goals&gt;</span><br><span class="line">                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">               &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">     &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看出，上述配置去掉了<code>&lt;descriptorRefs&gt;</code>标签，增加了<code>&lt;descriptors&gt;</code>配置，并且子标签中还指向了<code>src/main/resource/assembly-fat.xml</code>这个配置文件，如果你的思路跟着这篇文章走，一定可以猜得到，这个配置文件就是我们自定义打包方式的入口！它的格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&lt;assembly xmlns=&quot;http://maven.apache.org/ASSEMBLY/2.0.0&quot;</span><br><span class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">    xsi:schemaLocation=&quot;http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd&quot;&gt;</span><br><span class="line">  &lt;id&gt;distribution&lt;/id&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;formats&gt;</span><br><span class="line">    &lt;format&gt;jar&lt;/format&gt;</span><br><span class="line">  &lt;/formats&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;dependencySets&gt;</span><br><span class="line">		&lt;dependencySet&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;useProjectArtifact&gt;true&lt;/useProjectArtifact&gt;</span><br><span class="line">			&lt;unpack&gt;true&lt;/unpack&gt;</span><br><span class="line">			&lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">		&lt;/dependencySet&gt;</span><br><span class="line">	&lt;/dependencySets&gt;</span><br><span class="line">	</span><br><span class="line">  &lt;includeBaseDirectory&gt;false&lt;/includeBaseDirectory&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;fileSets&gt;</span><br><span class="line">    &lt;fileSet&gt;</span><br><span class="line">      &lt;directory&gt;$&#123;basedir&#125;&lt;/directory&gt;</span><br><span class="line">      &lt;includes&gt;</span><br><span class="line">        &lt;include&gt;*.txt&lt;/include&gt;</span><br><span class="line">      &lt;/includes&gt;</span><br><span class="line">      &lt;excludes&gt;</span><br><span class="line">        &lt;exclude&gt;README.txt&lt;/exclude&gt;</span><br><span class="line">        &lt;exclude&gt;NOTICE.txt&lt;/exclude&gt;</span><br><span class="line">      &lt;/excludes&gt;</span><br><span class="line">    &lt;/fileSet&gt;</span><br><span class="line">  &lt;/fileSets&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;files&gt;</span><br><span class="line">    &lt;file&gt;</span><br><span class="line">      &lt;source&gt;README.txt&lt;/source&gt;</span><br><span class="line">      &lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">      &lt;filtered&gt;true&lt;/filtered&gt;</span><br><span class="line">    &lt;/file&gt;</span><br><span class="line">    &lt;file&gt;</span><br><span class="line">      &lt;source&gt;NOTICE.txt&lt;/source&gt;</span><br><span class="line">      &lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">      &lt;filtered&gt;true&lt;/filtered&gt;</span><br><span class="line">    &lt;/file&gt;</span><br><span class="line">  &lt;/files&gt;</span><br><span class="line">&lt;/assembly&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="下面是标签的相关介绍"><a class="header-anchor" href="#下面是标签的相关介绍">¶</a>下面是标签的相关介绍</h5>
+<ul>
+<li><code>&lt;id&gt;</code> 生成文件的后缀，如果有，文件名将会是<code>${artifactId}-${id}.jar</code></li>
+<li><code>&lt;formats&gt;</code>生成文件的格式，可以同时生成多个格式的目标文件</li>
+<li><code>dependencySets</code>依赖jar的打包方式</li>
+<li><code>includeBaseDirectory</code>是否将项目目录引入进来，如果是<strong>True</strong>的话，生成的目标文件打开之后将会是项目主目录，我们打包的资源将会被放于这个主目录中（推荐<strong>Fasle</strong>，因为<code>Main-Class</code>路径通常直接是类路径）</li>
+<li><code>&lt;fileSets&gt;</code>引入静态资源的配置（目录级）</li>
+<li><code>files</code>引入静态资源的配置（文件级）</li>
+</ul>
+<p>以上是最常用的几种标签，更多的配置大家可以查阅官网 <a href="maven.apache.org/components/plugins/maven-assembly-plugin/">传送门</a></p>
+<p>配置完成之后可以通过<code>mvn assembly:assembly</code>或者<code>mvn package</code>指令打包。</p>
+<p>介绍完毕，下面会拉取笔者自己用<a href="https://gitee.com/ainilili/No-Framework" target="_blank" rel="noopener">NF</a>框架开发的模板工具来为大家演示一下<code>maven-assembly-plugin</code>在实战中的使用！</p>
+<h4 id="四-jar方式发布服务实战"><a class="header-anchor" href="#四-jar方式发布服务实战">¶</a>四、Jar方式发布服务实战</h4>
+<p>首先是项目结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Project</span><br><span class="line">│  LICENSE</span><br><span class="line">│  pom.xml								=》pom文件</span><br><span class="line">│  README.md</span><br><span class="line">├─src</span><br><span class="line">│  └─main</span><br><span class="line">│      ├─java							=》源码目录</span><br><span class="line">│      └─resource						=》配置文件目录</span><br><span class="line">└─web									=》UI静态资源</span><br></pre></td></tr></table></figure>
+<p>从结构中可以看出，我们需要手动配置的打包资源是<code>src/main/resource</code>和<code>web</code>这两个目录，所以我们需要所有配置，将上述两个目录随着我们的<code>.class</code>文件一起打包进jar中，首先在原pom.xml保持不变的基础上插入<code>maven-assembly-plugin</code>插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	&lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">	&lt;configuration&gt;</span><br><span class="line">		&lt;source&gt;1.8&lt;/source&gt;</span><br><span class="line">		&lt;target&gt;1.8&lt;/target&gt;</span><br><span class="line">		&lt;archive&gt;</span><br><span class="line">			&lt;manifest&gt;</span><br><span class="line">				&lt;mainClass&gt;org.nico.ct.CtApplication&lt;/mainClass&gt;</span><br><span class="line">			&lt;/manifest&gt;</span><br><span class="line">		&lt;/archive&gt;</span><br><span class="line">		&lt;descriptors&gt;</span><br><span class="line">			&lt;descriptor&gt;src/main/resource/assembly-fat.xml&lt;/descriptor&gt;</span><br><span class="line">		&lt;/descriptors&gt;</span><br><span class="line">	&lt;/configuration&gt;</span><br><span class="line">	&lt;executions&gt;</span><br><span class="line">		&lt;execution&gt;</span><br><span class="line">			 &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">			 &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">			 &lt;goals&gt;</span><br><span class="line">				  &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">			 &lt;/goals&gt;</span><br><span class="line">		&lt;/execution&gt;</span><br><span class="line">   &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
+<p>接下来编辑<code>src/main/resource/assembly-fat.xml</code>文件配置打包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&lt;assembly</span><br><span class="line">	xmlns=&quot;http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd&quot;&gt;</span><br><span class="line">	&lt;id&gt;RELEASE&lt;/id&gt;</span><br><span class="line"></span><br><span class="line">	&lt;formats&gt;</span><br><span class="line">		&lt;format&gt;jar&lt;/format&gt;</span><br><span class="line">	&lt;/formats&gt;</span><br><span class="line"></span><br><span class="line">	&lt;dependencySets&gt;</span><br><span class="line">		&lt;dependencySet&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;useProjectArtifact&gt;true&lt;/useProjectArtifact&gt;</span><br><span class="line">			&lt;unpack&gt;true&lt;/unpack&gt;</span><br><span class="line">			&lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">		&lt;/dependencySet&gt;</span><br><span class="line">	&lt;/dependencySets&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;includeBaseDirectory&gt;false&lt;/includeBaseDirectory&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;fileSets&gt;</span><br><span class="line">		&lt;fileSet&gt;</span><br><span class="line">			&lt;directory&gt;src/main/resource&lt;/directory&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;includes&gt;</span><br><span class="line">				&lt;include&gt;/**&lt;/include&gt;</span><br><span class="line">			&lt;/includes&gt;</span><br><span class="line">		&lt;/fileSet&gt;</span><br><span class="line">		&lt;fileSet&gt;</span><br><span class="line">			&lt;directory&gt;web&lt;/directory&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/web&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;includes&gt;</span><br><span class="line">				&lt;include&gt;/**&lt;/include&gt;</span><br><span class="line">			&lt;/includes&gt;</span><br><span class="line">		&lt;/fileSet&gt;</span><br><span class="line">	&lt;/fileSets&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&lt;files&gt;</span><br><span class="line">		&lt;file&gt;</span><br><span class="line">			&lt;source&gt;README.md&lt;/source&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">		&lt;/file&gt;</span><br><span class="line">	&lt;/files&gt;</span><br><span class="line"></span><br><span class="line">&lt;/assembly&gt;</span><br></pre></td></tr></table></figure>
+<p>然后运行<code>mvn assembly:assembly</code>，等待maven构建成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[INFO] META-INF/ already added, skipping</span><br><span class="line">[INFO] META-INF/MANIFEST.MF already added, skipping</span><br><span class="line">[INFO] org/ already added, skipping</span><br><span class="line">[INFO] org/nico/ already added, skipping</span><br><span class="line">[INFO] META-INF/maven/ already added, skipping</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] BUILD SUCCESS</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] Total time: 7.627 s</span><br><span class="line">[INFO] Finished at: 2018-06-30T15:39:47+08:00</span><br><span class="line">[INFO] Final Memory: 24M/269M</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>看到<code>BUILD SUCCESS</code>之后，你会发现项目target目录中会有两个jar</p>
+<ul>
+<li>CoffeeTime-0.0.1-SNAPSHOT.jar</li>
+<li>CoffeeTime-0.0.1-SNAPSHOT-RELEASE.jar</li>
+</ul>
+<p>文件名请忽略，后缀带<code>RELEASE</code>的jar就是<code>maven-assembly-plugin</code>插件生成的jar，解压看下目录</p>
+<pre><code>│  assembly-fat.xml
+│  cat-mysql-nico.xml
+│  cat-mysql.xml
+│  cat-redis-nico.xml
+│  cat-redis.xml
+│  cat.xml
+│  logno.properties
+│  module-info.class
+│  README.md
+├─com
+│  ├─mchange
+│  │ 
+│  └─mysql  
+├─images
+├─META-INF
+│  ├─maven
+│  │ 
+│  └─services
+├─net
+│  └─sf    
+├─org
+│  ├─apache
+│  │  
+│  ├─gjt
+│  │ 
+│  ├─nico
+│  ├─objectweb
+│  └─slf4j
+│ 
+├─redis
+│  └─clients
+│
+└─web
+    ├─images
+    ├─page 
+    ├─plugins  
+    ├─script
+    ├─style
+    ├─video
+    └─videojs
+</code></pre>
+<p>路径没问题，我们试下能不能运行，切到jar包所在的目录，执行<code>jar -jar CoffeeTime-0.0.1-SNAPSHOT-RELEASE.jar</code>运行之<br>
+<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e78328722cfc4?w=1389&amp;h=752&amp;f=png&amp;s=66225" alt="这里写图片描述"></p>
+<p>SUCCESS !</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Linux平台Nginx的安装及使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1347,416 +1764,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/深入浅说服务如何以Jar包的方式发布/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/深入浅说服务如何以Jar包的方式发布/" itemprop="url">深入浅说服务如何以Jar包的方式发布</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:49:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h6 id="序言"><a class="header-anchor" href="#序言">¶</a>序言</h6>
-<p>笔者前段时间在使用自研框架NF( <a href="https://gitee.com/ainilili/No-Framework" target="_blank" rel="noopener">传送门</a> )开发一个自动模板生成工具之后，想将他发布到Linux下，之前一直使用IDE直接<code>run as</code>运行，在遇到发布的时候考虑过发布为war或者jar，在一番抉择之后最终选择了jar（原因是NF自带服务容器，而war为tomcat而生，所以jar更适合NF），所以特意研究了一番如何将普通项目打包成jar发布。</p>
-<p>不出意外，最终我成功了，在兴奋之余，希望能够将自己实现的过程及遇到的坑记录下来，让看到有此需求的同学们少走一些弯路！</p>
-<h4 id="一-何为jar"><a class="header-anchor" href="#一-何为jar">¶</a>一、何为Jar</h4>
-<p>JAR 文件格式以流行的 ZIP 文件格式为基础。与 ZIP 文件不同的是，JAR 文件不仅用于压缩和发布，而且还用于部署和封装库、组件和插件程序，并可被像编译器和 JVM 这样的工具直接使用。在 JAR 中包含特殊的文件，如 manifests 和部署描述符，用来指示工具如何处理特定的 JAR。</p>
-<p>更多详情通过 <a href="https://www.ibm.com/developerworks/cn/java/j-jar/index.html" target="_blank" rel="noopener">传送门</a> 查阅。</p>
-<h4 id="二-发布服务的几种方案"><a class="header-anchor" href="#二-发布服务的几种方案">¶</a>二、发布服务的几种方案</h4>
-<p>在web开发完成之后，我们往往想要发布服务到外网服务器中，而外网服务器大多是都是Linux系统，这时我们不能已常规方式直接在IDE中运行，需要特定几种形式去发布。</p>
-<p>我们最初最常用的方式就是打包成<code>.war</code>的格式发布到Tomcat的服务容器中，这之后Tomcat会帮助我们解压war包，并加载<code>classes</code>文件夹下的<code>.class</code>到内存中，加载完毕之后，我们的服务就可以在服务器中正常运行，但是<code>.war</code>通常只适合配合Tomcat容器，对于其他服务容器，尤其是自研服务容器来讲，适用性非常差，而<code>Spring Boot</code>率先打破了常规。</p>
-<p>Spring Boot采用jar的方式发布，也就是说，我们可以使用Spring Boot提供的maven插件，通过<code>mvn package</code>指令将服务打包成jar的形式发布，这就意味着服务中涉及的所有资源（class文件、依赖jar包、静态资源文件）都将会打包在一个jar包之内，在启动这个层次来讲就异常的简单了，只需要通过<code>java -jar xxxx.jar</code>的方式就可以正常启动服务，这对于我们在自己的服务器中去启动服务来说非常的方便，而Spring Boot是怎么做到这一点的呢？</p>
-<p>我们来看一下Spring Boot的<code>pom.xml</code>依赖插件 <code>spring-boot-maven-plugin</code>，全配置如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;mainClass&gt;$&#123;start-class&#125;&lt;/mainClass&gt;</span><br><span class="line">    &lt;/configuration&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
-<p>我们通过之前对Jar包的了解已经得知，一个可执行jar的必要因素就是需要一个主函数入口，在上述配置中，我们可以看到很明确的主函数配置<code>&lt;mainClass&gt;${start-class}&lt;/mainClass&gt;</code>， 而占位符<code>${start-class}</code>的值就是我们平常开发中用来启动Spring Boot的主函数入口所在类，继续深入<code>spring-boot-maven-plugin</code>中，我们会看到这个插件内部依赖了更多maven自带的原生插件</p>
-<ul>
-<li>maven-failsafe-plugin</li>
-<li>maven-jar-plugin</li>
-<li>maven-surefire-plugin</li>
-<li>maven-war-plugin</li>
-<li>maven-resources-plugin</li>
-<li>maven-shade-plugin</li>
-</ul>
-<p>另外少部分插件如下</p>
-<ul>
-<li>exec-maven-plugin</li>
-<li>git-commit-id-plugin</li>
-<li>spring-boot-maven-plugin 自依赖，为了支持自己的插件</li>
-</ul>
-<p>从以上插件列表分析，<code>spring-boot-maven-plugin</code>中包含了很多maven原生插件，支持<code>jar</code>和 <code>war</code>的格式发布，我们只站在打包可执行jar的角度来分析以上插件的作用，可以这样理解</p>
-<ul>
-<li>maven-jar-plugin</li>
-</ul>
-<blockquote>
-<p>设定<code>manifest</code>中的<code>Main-Class</code>参数</p>
-</blockquote>
-<ul>
-<li>maven-shade-plugin</li>
-</ul>
-<blockquote>
-<p>用于把多个jar包，打成1个jar包</p>
-</blockquote>
-<ul>
-<li>maven-resources-plugin</li>
-</ul>
-<blockquote>
-<p>处理将项目资源（<code>src/main/</code>和 <code>src/test</code>）复制到输出目录的操作</p>
-</blockquote>
-<ul>
-<li>maven-surefire-plugin 和 maven-failsafe-plugin</li>
-</ul>
-<blockquote>
-<p>执行测试用例</p>
-</blockquote>
-<p>依赖插件的同时，<code>spring-boot-maven-plugin</code>中还使用<code>&lt;resources&gt;</code>标签来重新定义jar包内部结构。</p>
-<p>以上信息是否满足将我们的服务打包成可执行jar呢？我们分析一下，如果达到我们想要的效果，我们需要</p>
-<ol>
-<li>自动配置主函数入口</li>
-<li>静态资源打包</li>
-<li>依赖打包</li>
-</ol>
-<p>对比上述插件，我们需要的功能都有，那么我们是否可以使用上方的插件及标签自己写个打包插件试试呢？ 当然！这里就不带着大家亲自尝试了，因为下面我要讲另一种Spring Boot没有用到的maven插件进行打包！</p>
-<h4 id="三-maven-assembly-plugin-插件打包jar"><a class="header-anchor" href="#三-maven-assembly-plugin-插件打包jar">¶</a>三、maven-assembly-plugin 插件打包Jar</h4>
-<p><code>maven-assembly-plugin</code>是一个超灵活maven项目打包工具，提供默认配置和自定义配置，同时提供<code>Main-Class</code>的配置、静态文件Copy及依赖打包的功能，这里是官方对于这款插件的介绍</p>
-<blockquote>
-<p>The Assembly Plugin for Maven is primarily intended to allow users to aggregate the project output along with its dependencies, modules, site documentation, and other files into a single distributable archive.<br>
-Your project can build distribution “assemblies” easily, using one of the convenient, prefabricated assembly descriptors. These descriptors handle many common operations, such as packaging a project’s artifact along with generated documentation into a single zip archive. Alternatively, your project can provide its own descriptor and assume a much higher level of control over how dependencies, modules, file-sets, and individual files are packaged in the assembly.</p>
-</blockquote>
-<p>大概意思就是</p>
-<p>Maven的组装插件主要是允许用户将项目输出与它的依赖项、模块、站点文档和其他文件一起集成到一个可分发的归档文件中。您的项目可以使用一种方便的预制组装描述符轻松地构建分布“程序集”。这些描述符处理许多常见的操作，例如将项目的工件连同生成的文档打包到一个zip归档文件中。或者，您的项目可以提供自己的描述符，并对依赖项、模块、文件集和各个文件如何在程序集中打包具有更高的控制级别。</p>
-<p>通俗一点，你可以自定义你的项目打包格式，<code>maven-assembly-plugin</code>更像是多个打包插件的集成，并提供多种打包的文件格式，使用方面也很方便，最简单的一个使用如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	   &lt;artifactId&gt; maven-assembly-plugin &lt;/artifactId&gt;</span><br><span class="line">	   &lt;configuration&gt;</span><br><span class="line">			&lt;descriptorRefs&gt;</span><br><span class="line">				 &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">			&lt;/descriptorRefs&gt;</span><br><span class="line">			&lt;archive&gt;</span><br><span class="line">				 &lt;manifest&gt;</span><br><span class="line">					  &lt;mainClass&gt;$&#123;main-class&#125;&lt;/mainClass&gt;</span><br><span class="line">				 &lt;/manifest&gt;</span><br><span class="line">			&lt;/archive&gt;</span><br><span class="line">	   &lt;/configuration&gt;</span><br><span class="line">	   &lt;executions&gt;</span><br><span class="line">			&lt;execution&gt;</span><br><span class="line">				 &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">				 &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">				 &lt;goals&gt;</span><br><span class="line">					  &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">				 &lt;/goals&gt;</span><br><span class="line">			&lt;/execution&gt;</span><br><span class="line">	   &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
-<p><code>descriptorRefs</code>标签内部可以配置使用官方定制好的打包方式，其中如下可选配置</p>
-<ul>
-<li>bin</li>
-<li>jar-with-dependencies</li>
-<li>src</li>
-<li>project<br>
-不过官方定制好的有很大的局限性，我们可以将上述改成如下配置，来自定义打包方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	&lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">	&lt;configuration&gt;</span><br><span class="line">		&lt;archive&gt;</span><br><span class="line">			&lt;manifest&gt;</span><br><span class="line">				&lt;mainClass&gt;$&#123;main-class&#125;&lt;/mainClass&gt;</span><br><span class="line">			&lt;/manifest&gt;</span><br><span class="line">		&lt;/archive&gt;</span><br><span class="line">		&lt;descriptors&gt;</span><br><span class="line">            &lt;descriptor&gt;src/main/resource/assembly-fat.xml&lt;/descriptor&gt;</span><br><span class="line">        &lt;/descriptors&gt;</span><br><span class="line">	&lt;/configuration&gt;</span><br><span class="line">	&lt;executions&gt;</span><br><span class="line">         &lt;execution&gt;</span><br><span class="line">               &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">               &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">               &lt;goals&gt;</span><br><span class="line">                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">               &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">     &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
-<p>可以看出，上述配置去掉了<code>&lt;descriptorRefs&gt;</code>标签，增加了<code>&lt;descriptors&gt;</code>配置，并且子标签中还指向了<code>src/main/resource/assembly-fat.xml</code>这个配置文件，如果你的思路跟着这篇文章走，一定可以猜得到，这个配置文件就是我们自定义打包方式的入口！它的格式如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&lt;assembly xmlns=&quot;http://maven.apache.org/ASSEMBLY/2.0.0&quot;</span><br><span class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">    xsi:schemaLocation=&quot;http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd&quot;&gt;</span><br><span class="line">  &lt;id&gt;distribution&lt;/id&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;formats&gt;</span><br><span class="line">    &lt;format&gt;jar&lt;/format&gt;</span><br><span class="line">  &lt;/formats&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;dependencySets&gt;</span><br><span class="line">		&lt;dependencySet&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;useProjectArtifact&gt;true&lt;/useProjectArtifact&gt;</span><br><span class="line">			&lt;unpack&gt;true&lt;/unpack&gt;</span><br><span class="line">			&lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">		&lt;/dependencySet&gt;</span><br><span class="line">	&lt;/dependencySets&gt;</span><br><span class="line">	</span><br><span class="line">  &lt;includeBaseDirectory&gt;false&lt;/includeBaseDirectory&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;fileSets&gt;</span><br><span class="line">    &lt;fileSet&gt;</span><br><span class="line">      &lt;directory&gt;$&#123;basedir&#125;&lt;/directory&gt;</span><br><span class="line">      &lt;includes&gt;</span><br><span class="line">        &lt;include&gt;*.txt&lt;/include&gt;</span><br><span class="line">      &lt;/includes&gt;</span><br><span class="line">      &lt;excludes&gt;</span><br><span class="line">        &lt;exclude&gt;README.txt&lt;/exclude&gt;</span><br><span class="line">        &lt;exclude&gt;NOTICE.txt&lt;/exclude&gt;</span><br><span class="line">      &lt;/excludes&gt;</span><br><span class="line">    &lt;/fileSet&gt;</span><br><span class="line">  &lt;/fileSets&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;files&gt;</span><br><span class="line">    &lt;file&gt;</span><br><span class="line">      &lt;source&gt;README.txt&lt;/source&gt;</span><br><span class="line">      &lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">      &lt;filtered&gt;true&lt;/filtered&gt;</span><br><span class="line">    &lt;/file&gt;</span><br><span class="line">    &lt;file&gt;</span><br><span class="line">      &lt;source&gt;NOTICE.txt&lt;/source&gt;</span><br><span class="line">      &lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">      &lt;filtered&gt;true&lt;/filtered&gt;</span><br><span class="line">    &lt;/file&gt;</span><br><span class="line">  &lt;/files&gt;</span><br><span class="line">&lt;/assembly&gt;</span><br></pre></td></tr></table></figure>
-<h5 id="下面是标签的相关介绍"><a class="header-anchor" href="#下面是标签的相关介绍">¶</a>下面是标签的相关介绍</h5>
-<ul>
-<li><code>&lt;id&gt;</code> 生成文件的后缀，如果有，文件名将会是<code>${artifactId}-${id}.jar</code></li>
-<li><code>&lt;formats&gt;</code>生成文件的格式，可以同时生成多个格式的目标文件</li>
-<li><code>dependencySets</code>依赖jar的打包方式</li>
-<li><code>includeBaseDirectory</code>是否将项目目录引入进来，如果是<strong>True</strong>的话，生成的目标文件打开之后将会是项目主目录，我们打包的资源将会被放于这个主目录中（推荐<strong>Fasle</strong>，因为<code>Main-Class</code>路径通常直接是类路径）</li>
-<li><code>&lt;fileSets&gt;</code>引入静态资源的配置（目录级）</li>
-<li><code>files</code>引入静态资源的配置（文件级）</li>
-</ul>
-<p>以上是最常用的几种标签，更多的配置大家可以查阅官网 <a href="maven.apache.org/components/plugins/maven-assembly-plugin/">传送门</a></p>
-<p>配置完成之后可以通过<code>mvn assembly:assembly</code>或者<code>mvn package</code>指令打包。</p>
-<p>介绍完毕，下面会拉取笔者自己用<a href="https://gitee.com/ainilili/No-Framework" target="_blank" rel="noopener">NF</a>框架开发的模板工具来为大家演示一下<code>maven-assembly-plugin</code>在实战中的使用！</p>
-<h4 id="四-jar方式发布服务实战"><a class="header-anchor" href="#四-jar方式发布服务实战">¶</a>四、Jar方式发布服务实战</h4>
-<p>首先是项目结构</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Project</span><br><span class="line">│  LICENSE</span><br><span class="line">│  pom.xml								=》pom文件</span><br><span class="line">│  README.md</span><br><span class="line">├─src</span><br><span class="line">│  └─main</span><br><span class="line">│      ├─java							=》源码目录</span><br><span class="line">│      └─resource						=》配置文件目录</span><br><span class="line">└─web									=》UI静态资源</span><br></pre></td></tr></table></figure>
-<p>从结构中可以看出，我们需要手动配置的打包资源是<code>src/main/resource</code>和<code>web</code>这两个目录，所以我们需要所有配置，将上述两个目录随着我们的<code>.class</code>文件一起打包进jar中，首先在原pom.xml保持不变的基础上插入<code>maven-assembly-plugin</code>插件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">	&lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">	&lt;configuration&gt;</span><br><span class="line">		&lt;source&gt;1.8&lt;/source&gt;</span><br><span class="line">		&lt;target&gt;1.8&lt;/target&gt;</span><br><span class="line">		&lt;archive&gt;</span><br><span class="line">			&lt;manifest&gt;</span><br><span class="line">				&lt;mainClass&gt;org.nico.ct.CtApplication&lt;/mainClass&gt;</span><br><span class="line">			&lt;/manifest&gt;</span><br><span class="line">		&lt;/archive&gt;</span><br><span class="line">		&lt;descriptors&gt;</span><br><span class="line">			&lt;descriptor&gt;src/main/resource/assembly-fat.xml&lt;/descriptor&gt;</span><br><span class="line">		&lt;/descriptors&gt;</span><br><span class="line">	&lt;/configuration&gt;</span><br><span class="line">	&lt;executions&gt;</span><br><span class="line">		&lt;execution&gt;</span><br><span class="line">			 &lt;id&gt;make-assembly&lt;/id&gt;</span><br><span class="line">			 &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">			 &lt;goals&gt;</span><br><span class="line">				  &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">			 &lt;/goals&gt;</span><br><span class="line">		&lt;/execution&gt;</span><br><span class="line">   &lt;/executions&gt;</span><br><span class="line">&lt;/plugin&gt;</span><br></pre></td></tr></table></figure>
-<p>接下来编辑<code>src/main/resource/assembly-fat.xml</code>文件配置打包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&lt;assembly</span><br><span class="line">	xmlns=&quot;http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd&quot;&gt;</span><br><span class="line">	&lt;id&gt;RELEASE&lt;/id&gt;</span><br><span class="line"></span><br><span class="line">	&lt;formats&gt;</span><br><span class="line">		&lt;format&gt;jar&lt;/format&gt;</span><br><span class="line">	&lt;/formats&gt;</span><br><span class="line"></span><br><span class="line">	&lt;dependencySets&gt;</span><br><span class="line">		&lt;dependencySet&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;useProjectArtifact&gt;true&lt;/useProjectArtifact&gt;</span><br><span class="line">			&lt;unpack&gt;true&lt;/unpack&gt;</span><br><span class="line">			&lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">		&lt;/dependencySet&gt;</span><br><span class="line">	&lt;/dependencySets&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;includeBaseDirectory&gt;false&lt;/includeBaseDirectory&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;fileSets&gt;</span><br><span class="line">		&lt;fileSet&gt;</span><br><span class="line">			&lt;directory&gt;src/main/resource&lt;/directory&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;includes&gt;</span><br><span class="line">				&lt;include&gt;/**&lt;/include&gt;</span><br><span class="line">			&lt;/includes&gt;</span><br><span class="line">		&lt;/fileSet&gt;</span><br><span class="line">		&lt;fileSet&gt;</span><br><span class="line">			&lt;directory&gt;web&lt;/directory&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/web&lt;/outputDirectory&gt;</span><br><span class="line">			&lt;includes&gt;</span><br><span class="line">				&lt;include&gt;/**&lt;/include&gt;</span><br><span class="line">			&lt;/includes&gt;</span><br><span class="line">		&lt;/fileSet&gt;</span><br><span class="line">	&lt;/fileSets&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&lt;files&gt;</span><br><span class="line">		&lt;file&gt;</span><br><span class="line">			&lt;source&gt;README.md&lt;/source&gt;</span><br><span class="line">			&lt;outputDirectory&gt;/&lt;/outputDirectory&gt;</span><br><span class="line">		&lt;/file&gt;</span><br><span class="line">	&lt;/files&gt;</span><br><span class="line"></span><br><span class="line">&lt;/assembly&gt;</span><br></pre></td></tr></table></figure>
-<p>然后运行<code>mvn assembly:assembly</code>，等待maven构建成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[INFO] META-INF/ already added, skipping</span><br><span class="line">[INFO] META-INF/MANIFEST.MF already added, skipping</span><br><span class="line">[INFO] org/ already added, skipping</span><br><span class="line">[INFO] org/nico/ already added, skipping</span><br><span class="line">[INFO] META-INF/maven/ already added, skipping</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] BUILD SUCCESS</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] Total time: 7.627 s</span><br><span class="line">[INFO] Finished at: 2018-06-30T15:39:47+08:00</span><br><span class="line">[INFO] Final Memory: 24M/269M</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
-<p>看到<code>BUILD SUCCESS</code>之后，你会发现项目target目录中会有两个jar</p>
-<ul>
-<li>CoffeeTime-0.0.1-SNAPSHOT.jar</li>
-<li>CoffeeTime-0.0.1-SNAPSHOT-RELEASE.jar</li>
-</ul>
-<p>文件名请忽略，后缀带<code>RELEASE</code>的jar就是<code>maven-assembly-plugin</code>插件生成的jar，解压看下目录</p>
-<pre><code>│  assembly-fat.xml
-│  cat-mysql-nico.xml
-│  cat-mysql.xml
-│  cat-redis-nico.xml
-│  cat-redis.xml
-│  cat.xml
-│  logno.properties
-│  module-info.class
-│  README.md
-├─com
-│  ├─mchange
-│  │ 
-│  └─mysql  
-├─images
-├─META-INF
-│  ├─maven
-│  │ 
-│  └─services
-├─net
-│  └─sf    
-├─org
-│  ├─apache
-│  │  
-│  ├─gjt
-│  │ 
-│  ├─nico
-│  ├─objectweb
-│  └─slf4j
-│ 
-├─redis
-│  └─clients
-│
-└─web
-    ├─images
-    ├─page 
-    ├─plugins  
-    ├─script
-    ├─style
-    ├─video
-    └─videojs
-</code></pre>
-<p>路径没问题，我们试下能不能运行，切到jar包所在的目录，执行<code>jar -jar CoffeeTime-0.0.1-SNAPSHOT-RELEASE.jar</code>运行之<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e78328722cfc4?w=1389&amp;h=752&amp;f=png&amp;s=66225" alt="这里写图片描述"></p>
-<p>SUCCESS !</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Config-入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Config-入门/" itemprop="url">Spring Cloud Config 入门</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:47:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一-依赖配置"><a class="header-anchor" href="#一-依赖配置">¶</a>一、依赖配置</h2>
-<p>Maven依赖配置只是配置中心需要的配置，其他配置自加，本文仅以扩展为目标~</p>
-<h4 id="客户端"><a class="header-anchor" href="#客户端">¶</a>客户端</h4>
-<p>Maven配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-config&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>Main</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableConfigServer</span><br><span class="line">public class ConfigApp &#123;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) throws Exception &#123;</span><br><span class="line">		SpringApplication.run(ConfigApp.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>application.yml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8087</span><br><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      label: master</span><br><span class="line">      server:</span><br><span class="line">        git:</span><br><span class="line">          uri: git配置仓库http地址</span><br><span class="line">          username: xxx</span><br><span class="line">          password: xxx</span><br></pre></td></tr></table></figure>
-<h4 id="配置服务端"><a class="header-anchor" href="#配置服务端">¶</a>配置服务端</h4>
-<p>Maven配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-config-server&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>application.yml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      profile: dev</span><br><span class="line">      label: master</span><br><span class="line">      uri: http://localhost:8087/</span><br></pre></td></tr></table></figure>
-<h2 id="二-映射规则"><a class="header-anchor" href="#二-映射规则">¶</a>二、映射规则</h2>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/&#123;application&#125;/&#123;profile&#125;[/&#123;label&#125;]</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.properties</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.properties</span><br></pre></td></tr></table></figure>
-<p>application：服务名<br>
-profile：环境<code>dev/test/pro</code><br>
-lable：分支</p>
-<p>仓库根目录下可以用<code>application.yml</code>作为全局配置，所有服务共享</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Jenkins安装及自动部署Maven项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1963,6 +1970,145 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Config-入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Config-入门/" itemprop="url">Spring Cloud Config 入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:47:00+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一-依赖配置"><a class="header-anchor" href="#一-依赖配置">¶</a>一、依赖配置</h2>
+<p>Maven依赖配置只是配置中心需要的配置，其他配置自加，本文仅以扩展为目标~</p>
+<h4 id="客户端"><a class="header-anchor" href="#客户端">¶</a>客户端</h4>
+<p>Maven配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-config&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>Main</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableConfigServer</span><br><span class="line">public class ConfigApp &#123;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) throws Exception &#123;</span><br><span class="line">		SpringApplication.run(ConfigApp.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>application.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8087</span><br><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      label: master</span><br><span class="line">      server:</span><br><span class="line">        git:</span><br><span class="line">          uri: git配置仓库http地址</span><br><span class="line">          username: xxx</span><br><span class="line">          password: xxx</span><br></pre></td></tr></table></figure>
+<h4 id="配置服务端"><a class="header-anchor" href="#配置服务端">¶</a>配置服务端</h4>
+<p>Maven配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-config-server&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>application.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      profile: dev</span><br><span class="line">      label: master</span><br><span class="line">      uri: http://localhost:8087/</span><br></pre></td></tr></table></figure>
+<h2 id="二-映射规则"><a class="header-anchor" href="#二-映射规则">¶</a>二、映射规则</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/&#123;application&#125;/&#123;profile&#125;[/&#123;label&#125;]</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.properties</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.properties</span><br></pre></td></tr></table></figure>
+<p>application：服务名<br>
+profile：环境<code>dev/test/pro</code><br>
+lable：分支</p>
+<p>仓库根目录下可以用<code>application.yml</code>作为全局配置，所有服务共享</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2092,235 +2238,6 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Gateway深入探究/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Gateway深入探究/" itemprop="url">Spring Cloud Gateway深入探究</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:41:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="spring-cloud-gateway介绍"><a class="header-anchor" href="#spring-cloud-gateway介绍">¶</a>Spring Cloud Gateway介绍</h2>
-<p>废话不多说，看官方文档的介绍</p>
-<blockquote>
-<p>This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.</p>
-</blockquote>
-<p>有道翻译一下:</p>
-<p>这个项目提供了一个建在Spring生态系统之上的API网关，包括:Spring 5, Spring Boot 2和project Reactor。Spring Cloud Gateway旨在提供一种简单而有效的方式来路由到api，并为它们提供交叉关注，例如:安全性、监视/度量和弹性。</p>
-<p>工作原理如下：</p>
-<p><img src="https://raw.githubusercontent.com/spring-cloud/spring-cloud-gateway/master/docs/src/main/asciidoc/images/spring_cloud_gateway_diagram.png" alt="image"></p>
-<p>Gateway实际上提供了一个在路由上的控制功能，大体包含两个大功能：</p>
-<ul>
-<li>Route</li>
-<li>Filter</li>
-<li>Forward</li>
-</ul>
-<p>我们可以通过Route去匹配请求的uri，而每个Router下可以配置一个Filter Chain，我们可以通过Filter去修饰请求和响应及一些类似鉴权等中间动作，通过Forward可以控制重定向和请求转发（实际上Filter也可以做到，只不过这里分开说清晰一点）。在路由控制上，Gateway表现的非常灵活，它有两种配置方式：</p>
-<ul>
-<li>Yml or Properties File</li>
-<li>Code</li>
-</ul>
-<p>主要名词如下：</p>
-<ul>
-<li><strong>Route</strong>: Route the basic building block of the gateway. It is defined by an ID, a destination URI, a collection of predicates and a collection of filters. A route is matched if aggregate predicate is true.</li>
-<li><strong>Predicate</strong>: This is a Java 8 Function Predicate. The input type is a Spring Framework ServerWebExchange. This allows developers to match on anything from the HTTP request, such as headers or parameters.</li>
-<li><strong>Filter</strong>: These are instances Spring Framework GatewayFilter constructed in with a specific factory. Here, requests and responses can be modified before or after sending the downstream request.</li>
-</ul>
-<p>Route 作为Gateway中的基本元素，它有自己的ID、URI和一个Predicate集合、Filter集合。Predicate的作用是判断请求的Uri是否匹配当前的Route，Filter则是匹配通过之后对请求和响应的处理及修饰，那么在Gateway中Route基本结构如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Gateway&#123;</span><br><span class="line">    Route1 &#123;</span><br><span class="line">        String id;</span><br><span class="line">        String path;</span><br><span class="line">        List&lt;Predicate&gt; predicates;</span><br><span class="line">        List&lt;Filter&gt; filters;</span><br><span class="line">    &#125;;</span><br><span class="line">    Route2 &#123;</span><br><span class="line">        String id;</span><br><span class="line">        String path;</span><br><span class="line">        List&lt;Predicate&gt; predicates;</span><br><span class="line">        List&lt;Filter&gt; filters;</span><br><span class="line">    &#125;;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Route中的ID作为它的唯一标识，path的作用是正则匹配请求路径，Predicate则是在path匹配的情况下进一步去更加细致的匹配请求路径，如一下例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: before_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Before=2017-01-20T17:42:47.789-07:00[America/Denver]</span><br></pre></td></tr></table></figure>
-<p>只匹配在<code>Jan 20, 2017 17:42</code> 发起的请求</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: cookie_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Cookie=chocolate, “”</span><br></pre></td></tr></table></figure>
-<p>只匹配请求中携带<code>chocolate</code>且值为<code>ch.p</code>的请求</p>
-<p>更多例子这里就不一一展开，有兴趣的可以去看下官方文档: <a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#gateway-request-predicates-factories" target="_blank" rel="noopener">传送门</a></p>
-<h2 id="spring-cloud-gateway-配置"><a class="header-anchor" href="#spring-cloud-gateway-配置">¶</a>Spring Cloud Gateway 配置</h2>
-<h4 id="maven"><a class="header-anchor" href="#maven">¶</a>Maven</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencyManagement&gt;</span><br><span class="line">		&lt;dependencies&gt;</span><br><span class="line">			&lt;dependency&gt;</span><br><span class="line">				&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">				&lt;artifactId&gt;spring-cloud-gateway&lt;/artifactId&gt;</span><br><span class="line">				&lt;version&gt;2.0.2.BUILD-SNAPSHOT&lt;/version&gt;</span><br><span class="line">				&lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">				&lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">			&lt;/dependency&gt;</span><br><span class="line">		&lt;/dependencies&gt;</span><br><span class="line">	&lt;/dependencyManagement&gt;</span><br><span class="line">	&lt;dependencies&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;spring-cloud-starter-gateway&lt;/artifactId&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">		    &lt;groupId&gt;org.yaml&lt;/groupId&gt;</span><br><span class="line">		    &lt;artifactId&gt;snakeyaml&lt;/artifactId&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">	&lt;/dependencies&gt;</span><br><span class="line">	&lt;repositories&gt;</span><br><span class="line">		&lt;repository&gt;</span><br><span class="line">			&lt;id&gt;spring-snapshots&lt;/id&gt;</span><br><span class="line">			&lt;name&gt;Spring Snapshots&lt;/name&gt;</span><br><span class="line">			&lt;url&gt;https://repo.spring.io/libs-snapshot&lt;/url&gt;</span><br><span class="line">			&lt;snapshots&gt;</span><br><span class="line">				&lt;enabled&gt;true&lt;/enabled&gt;</span><br><span class="line">			&lt;/snapshots&gt;</span><br><span class="line">		&lt;/repository&gt;</span><br><span class="line">	&lt;/repositories&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="yml"><a class="header-anchor" href="#yml">¶</a>Yml</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    gateway:</span><br><span class="line">      routes:</span><br><span class="line">      - id: cookie_route</span><br><span class="line">        uri: http://example.org</span><br><span class="line">        predicates:</span><br><span class="line">        - Cookie=chocolate, ch.p</span><br></pre></td></tr></table></figure>
-<h4 id="java-config"><a class="header-anchor" href="#java-config">¶</a>Java Config</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@RestController</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class Application &#123;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">		return builder.routes()</span><br><span class="line">				.route(r -&gt; r.path(&quot;/request/**&quot;)</span><br><span class="line">						.and()</span><br><span class="line">						.predicate(new Predicate&lt;ServerWebExchange&gt;() &#123;</span><br><span class="line">							@Override</span><br><span class="line">							public boolean test(ServerWebExchange t) &#123;</span><br><span class="line">								boolean access = t.getRequest().getCookies().get(&quot;_9755xjdesxxd_&quot;).get(0).getValue().equals(&quot;32&quot;);</span><br><span class="line">								return access;</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;)</span><br><span class="line">						.filters(f -&gt; f.stripPrefix(2)</span><br><span class="line">							.filter(new GatewayFilter() &#123;</span><br><span class="line">								@Override</span><br><span class="line">								public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;</span><br><span class="line">									return chain.filter(exchange);</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;, 2)</span><br><span class="line">							.filter(new GatewayFilter() &#123;</span><br><span class="line">								@Override</span><br><span class="line">								public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) &#123;</span><br><span class="line">									return chain.filter(exchange);</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;, 1))</span><br><span class="line">						.uri(&quot;http://localhost:8080/hello&quot;)</span><br><span class="line">						).build();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@GetMapping(&quot;/hello&quot;)</span><br><span class="line">	public String hello() &#123;</span><br><span class="line">		return &quot;hello&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Yml配置和Java代码配置可以共存，Yml配置的好处是可以直接用自带的一些谓词和Filter，而Java代码配置更加灵活！</p>
-<h2 id="spring-cloud-gateway使用"><a class="header-anchor" href="#spring-cloud-gateway使用">¶</a>Spring Cloud Gateway使用</h2>
-<p>上文已经说过，Gateway支持两种配置，本文主要以Java Config的方式着重讲解，因为官方文档中对于Yml配置的讲解已经足够深入，如有兴趣可以进入<a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#gateway-how-it-works" target="_blank" rel="noopener">传送门</a></p>
-<h4 id="route"><a class="header-anchor" href="#route">¶</a>Route</h4>
-<p>一个Route的配置可以足够简单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@RestController</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class Application1 &#123;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">		return builder.routes()</span><br><span class="line">				.route(r -&gt; r.path(&quot;/user/**&quot;)</span><br><span class="line">						.uri(&quot;http://localhost:8080/hello&quot;)</span><br><span class="line">						).build();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@GetMapping(&quot;/hello&quot;)</span><br><span class="line">	public String hello() &#123;</span><br><span class="line">		return &quot;hello&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">		SpringApplication.run(Application1.class, args);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述Demo定义了一个Route，并且path值为<code>/**</code>，意味着匹配多层uri，如果将path改为<code>/*</code>则意味着只能匹配一层。所以运行上面的程序，那么所有的请求都将被转发到<code>http://localhost:8080/hello</code></p>
-<p>如果uri的配置并没有一个确定的资源，例如<code>http://ip:port</code>，那么<code>/**</code>所匹配的路径将会自动拼装在uri之后：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://当前服务/user/1</span><br><span class="line">forward http://ip:port/user/1</span><br></pre></td></tr></table></figure>
-<p>这种方式更适合服务之间的转发，我们可以将uri设置为<code>ip:port</code>也可以设置为<code>xxx.com</code>域名，但是不能自己转发自己的服务，例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://当前服务/user/1</span><br><span class="line">forward http://当前服务/user/1</span><br></pre></td></tr></table></figure>
-<p>这就导致了HTTP 413的错误，无限转发至自己，也就意味着请求死锁，非常致命！最好的方式如下：</p>
-<p>我们拟定开两个服务占用的端口分别是<code>8080</code>和<code>8081</code>,我们假如要从<code>8080</code>服务通过<code>/user/**</code>路由匹配转发至<code>8081</code>服务，可以这样做：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>工作跟踪：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request http://localhost:8080/user/hello</span><br><span class="line">forward http://localhost:8081/user/hello</span><br></pre></td></tr></table></figure>
-<p>8081服务接口定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/user/hello&quot;)</span><br><span class="line">public String hello() &#123;</span><br><span class="line">	return &quot;User Say Hello&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Reponse Body：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User Say Hello</span><br></pre></td></tr></table></figure>
-<p>当Gateway代替Zuul时，也就是说在服务间的通讯由Zuul转换成Gateway之后，uri的写法将会变成这个样子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(r -&gt; r.path(&quot;user/**&quot;)</span><br><span class="line">					.uri(&quot;lb://USER_SERVER_NAME&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述代码将<code>user/**</code>所匹配的请求全部转发到<code>USER_SERVER_NAME</code>服务下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request /user/1</span><br><span class="line">forward http://USER_SERVER_HOST:USER_SERVER_PORT/user/1</span><br></pre></td></tr></table></figure>
-<p>其中<strong>lb</strong>的含义其实是<code>load balance</code>的意思，我想开发者以lb来区分路由模式可能是负载均衡意味着多服务的环境，因此lb可以表示转发对象从指定的uri转变成了服务！</p>
-<h4 id="predicate"><a class="header-anchor" href="#predicate">¶</a>Predicate</h4>
-<p>Predicate是Java 8+新出的一个库，本身作用是进行逻辑运算，支持种类如下：</p>
-<ul>
-<li>isEqual</li>
-<li>and</li>
-<li>negate</li>
-<li>or<br>
-另外还有一个方法<code>test(T)</code>用于触发逻辑计算返回一个Boolean类型值。</li>
-</ul>
-<p>Gateway使用Predicate来做除path pattern match之外的匹配判断，使用及其简单：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.predicate(e -&gt; e.getClass() != null)</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>输入的<strong>e</strong>代表着<code>ServerWebExchange</code>对象，我们可以通过<code>ServerWebExchange</code>获取所有请求相关的信息，例如Cookies和Headers。通过Lambda语法去编写判断逻辑，如果一个Route中所有的Predicate返回的结果都是TRUE则匹配成功，否则匹配失败。</p>
-<blockquote>
-<p>Tp：path和predicate需要使用and链接，也可以使用or链接，分别代表不同的逻辑运算！</p>
-</blockquote>
-<h4 id="filter"><a class="header-anchor" href="#filter">¶</a>Filter</h4>
-<p>Filter的作用类似于Predicate，区别在于，Predicate可以做请求中断，Filter也可以做，Filter可以做Reponse的修饰，Predicate并做不到，也就是说Filter最为最后一道拦截，可以做的事情有很多，例如修改响应报文，增加个Header或者Cookie，甚至修改响应Body，相比之下，Filter更加全能！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public RouteLocator customRouteLocator(RouteLocatorBuilder builder) &#123;</span><br><span class="line">	return builder.routes()</span><br><span class="line">			.route(&quot;hello&quot;, r -&gt; r</span><br><span class="line">					.path(&quot;/user/**&quot;)</span><br><span class="line">					.and()</span><br><span class="line">					.predicate(e -&gt; e.getClass() != null)</span><br><span class="line">					.filters(fn -&gt; fn.addResponseHeader(&quot;developer&quot;, &quot;Nico&quot;))</span><br><span class="line">					.uri(&quot;http://localhost:8081&quot;)</span><br><span class="line">					).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="spring-cloud-gateway-工作原理"><a class="header-anchor" href="#spring-cloud-gateway-工作原理">¶</a>Spring Cloud Gateway 工作原理</h2>
-<p>Gateway是基于Spring MVC之上的网关路由控制器，我们可以直接定位到Spring MVC的<code>org.springframework.web.reactive.DispatcherHandler</code>类，它的<code>handle</code>方法将会处理解析Request之后的<code>ServerWebExchange</code>对象。</p>
-<p>进入<code>handle</code>方法，将会使用Flux遍历<code>org.springframework.web.reactive.DispatcherHandler.handlerMappings</code>对<code>ServerWebExchange</code>进行处理,<code>handlerMappings</code>中包含着一下处理器：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.web.reactive.function.server.support.RouterFunctionMapping@247a29b6, org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping@f6449f4, org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping@535c6b8b,</span><br><span class="line">org.springframework.web.reactive.handler.SimpleUrlHandlerMapping@5633e9e</span><br></pre></td></tr></table></figure>
-<p>以上只是一个简单请求的处理器，Flux的<code>concatMap</code>方法会将每个处理器的Mono合并成一个Flux，然后调用<code>org.springframework.web.reactive.DispatcherHandler</code>类中的<code>invokeHandler</code>方法开始处理<code>ServerWebExchange</code>,处理完毕之后将紧接着处理返回值，这时使用<code>handleResult</code>方法，具体实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Mono&lt;Void&gt; handle(ServerWebExchange exchange) &#123;</span><br><span class="line">	if (logger.isDebugEnabled()) &#123;</span><br><span class="line">		ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">		logger.debug(&quot;Processing &quot; + request.getMethodValue() + &quot; request for [&quot; + request.getURI() + &quot;]&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	if (this.handlerMappings == null) &#123;</span><br><span class="line">		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);</span><br><span class="line">	&#125;</span><br><span class="line">	return Flux.fromIterable(this.handlerMappings)</span><br><span class="line">			.concatMap(mapping -&gt; mapping.getHandler(exchange))</span><br><span class="line">			.next()</span><br><span class="line">			.switchIfEmpty(Mono.error(HANDLER_NOT_FOUND_EXCEPTION))</span><br><span class="line">			.flatMap(handler -&gt; invokeHandler(exchange, handler))</span><br><span class="line">			.flatMap(result -&gt; handleResult(exchange, result));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Gateway起作用的关键在于<code>invokeHandler</code>方法中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private Mono&lt;HandlerResult&gt; invokeHandler(ServerWebExchange exchange, Object handler) &#123;</span><br><span class="line">	if (this.handlerAdapters != null) &#123;</span><br><span class="line">		for (HandlerAdapter handlerAdapter : this.handlerAdapters) &#123;</span><br><span class="line">			if (handlerAdapter.supports(handler)) &#123;</span><br><span class="line">				return handlerAdapter.handle(exchange, handler);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return Mono.error(new IllegalStateException(&quot;No HandlerAdapter: &quot; + handler));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对应的处理器的适配器匹配到本身之后，将会触发适配器的处理方法，每个处理器都会实现一个对应的接口，他们大致都有一个共同的特点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Handler &#123;</span><br><span class="line"></span><br><span class="line">	Mono&lt;Void&gt; handle(ServerWebExchange exchange);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每个适配器的处理方法中都会在穿插入适配逻辑代码之后调用处理器的<code>handle</code>方法，Spring Cloud Gateway的所有Handler都在<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line">org.springframework.cloud.gateway.handler.AsyncPredicate&lt;T&gt;</span><br><span class="line">org.springframework.cloud.gateway.handler.FilteringWebHandler</span><br><span class="line">org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping</span><br></pre></td></tr></table></figure></p>
-<p>可以看到，上述三个处理器分别处理了Filter和Predicate，有兴趣的朋友可以去看一下这些类内部的具体实现，这里就不一一细说。</p>
-<p>总的来讲，Spring Cloud Gateway的原理是在服务加载期间读取自己的配置将信息存放在一个容器中，在Spring Mvc 处理请求的时候取出这些信息进行<strong>逻辑判断</strong>及<strong>过滤</strong>，根据不同的处理结果触发不同的事件！</p>
-<p>而请求转发这一块有兴趣的同学可以去研究一下！</p>
-<blockquote>
-<p>TP: path的匹配其实也是一个Predicate逻辑判断</p>
-</blockquote>
-<h2 id="spring-cloud-gateway-总结"><a class="header-anchor" href="#spring-cloud-gateway-总结">¶</a>Spring Cloud Gateway 总结</h2>
-<p>笔者偶然间看到spring-cloud-netflix的issue下的一个回答<a href="https://github.com/spring-cloud/spring-cloud-netflix/issues/2951" target="_blank" rel="noopener">传送门</a>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lovnx：Zuul 2.0 has opened sourcing,Do you intend to integrate it in some next version?</span><br><span class="line">spencergibb：No. We created spring cloud gateway instead.</span><br></pre></td></tr></table></figure>
-<p>这才感觉到Spring Cloud果然霸气，也因此接触到了Spring Cloud Gateway，觉得很有必要学习一下，总体来讲，Spring Cloud Gateway简化了之前过滤器配置的复杂度，也在新的配置方式上增加了微服务的网关配置，可以直接代替掉Zuul，期待着Spring会整出自己的注册中心来。</p>
-<p>笔者学艺不精，以上阐述有误的地方，希望批评指出，联系方式：ainililia@163.com</p>
-<h2 id="相关文档"><a class="header-anchor" href="#相关文档">¶</a>相关文档</h2>
-<p><a href="http://cloud.spring.io/spring-cloud-gateway/single/spring-cloud-gateway.html#_glossary" target="_blank" rel="noopener">官方文档</a><br>
-<a href="http://ju.outofmemory.cn/entry/346688" target="_blank" rel="noopener">Spring Cloud Gateway 入门</a><br>
-<a href="https://blog.csdn.net/qq_28089993/article/details/79443447" target="_blank" rel="noopener">响应式编程之Reactor的关于Flux和Mono概念</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2373,7 +2290,7 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2384,7 +2301,7 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
               
               <div class="site-state-item site-state-categories">
                 
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 
               </div>
@@ -2472,13 +2389,12 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Nico</span>
+  <span class="author" itemprop="copyrightHolder">2018 - 2021</span>
 
   
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -2486,9 +2402,6 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
 
 
 
-  豫ICP备 -
-  <a href="http://www.miitbeian.gov.cn/">16030833号-2</a>
-  
 
 
 
