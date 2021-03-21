@@ -191,6 +191,26 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -219,6 +239,163 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/22/Kick-Start-Round-A-2021-L-Shaped-Plots/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/Kick-Start-Round-A-2021-L-Shaped-Plots/" itemprop="url">Kick Start Round A 2021 -  L Shaped Plots </a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T04:01:00+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>原题地址: <a href="https://codingcompetitions.withgoogle.com/kickstart/round/0000000000436140/000000000068c509" target="_blank" rel="noopener">传送门</a></p>
+<h3 id="分析"><a class="header-anchor" href="#分析">¶</a>分析</h3>
+<p>在二维坐标系中由很多坐标点组成段，段的最小长度为2，且段只有x轴（横轴）和y轴（纵轴）之分，求由两个段组成，垂直有共同顶点，且长边是短边两倍的组合数量。</p>
+<p>输入集是一个二维数组，要求中的两个线段互相垂直，这里可以分析出组合中的两个线段一个在x轴一个在y轴。一种思路是通过遍历二维数组得到x和y轴所有的段，再对每个段的端点做索引，再做dfs求组合数，不过这种简单的思路在Test2会出现超时或内存溢出的错误，所以要换一种更简单的思路。</p>
+<p>个人解决思路是先对x或y任意维度做head的索引（y轴由上到下，head为上顶点，x轴head为左顶点），例如先对y轴所有段的head做索引，这里直接使用二维数组，假设y轴段的索引定义为二维数组<code>indexs = [1000][1000]int</code>, indexs第一层下标为x轴坐标，第二层下标为y轴坐标，值为段的长度。之后再遍历获取所有的x轴段，对于x轴的每个段，取其对应的head和tail坐标以及长度len，通过枚举所有满足的y轴坐标值：</p>
+<ul>
+<li>y1 (head.x, head.y - （len/2） + 1)</li>
+<li>y2 (head.x, head.y)</li>
+<li>y3 (head.x, head.y - （len*2） + 1)</li>
+<li>y4 (tail.x, tail.y - （len/2） + 1)</li>
+<li>y5 (tail.x, tail.y)</li>
+<li>y6 (tail.x, tail.y - （len*2） + 1)</li>
+</ul>
+<p>(y1和y4只有当len为偶数且大于等于4的时候才成立)<br>
+之后通过得到的y轴坐标去检索indexs，如果存在则判断对应段的长度是否满足与当前x轴段长的规则，如果满足则count ++，所有x轴段匹配完毕，输出count为结果值。</p>
+<h3 id="slove"><a class="header-anchor" href="#slove">¶</a>Slove</h3>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bufio"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> in = bufio.NewReader(os.Stdin)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">solve</span><span class="params">()</span></span>&#123;</span><br><span class="line">	inputs := readInts(in)</span><br><span class="line">	r := inputs[<span class="number">0</span>]</span><br><span class="line">	c := inputs[<span class="number">1</span>]</span><br><span class="line">	grid := <span class="built_in">make</span>([][]<span class="keyword">int</span>, r)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; r; i ++ &#123;</span><br><span class="line">		grid[i] = readInts(in)</span><br><span class="line">	&#125;</span><br><span class="line">	cols := [<span class="number">1000</span>][<span class="number">1000</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; c; i ++ &#123;</span><br><span class="line">		y := <span class="number">-1</span></span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; r;	j ++  &#123;</span><br><span class="line">			<span class="keyword">if</span> grid[j][i] == <span class="number">1</span>&#123;</span><br><span class="line">				<span class="keyword">if</span> y == <span class="number">-1</span> &#123;</span><br><span class="line">					y = j</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> y != <span class="number">-1</span> &amp;&amp; (grid[j][i] != <span class="number">1</span>  || j == r - <span class="number">1</span>)&#123;</span><br><span class="line">				d := j - y</span><br><span class="line">				<span class="keyword">if</span> j == r - <span class="number">1</span> &amp;&amp; grid[j][i] == <span class="number">1</span>&#123;</span><br><span class="line">					d ++</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> d &gt; <span class="number">1</span> &#123;</span><br><span class="line">					<span class="keyword">for</span> di := <span class="number">0</span>; di &lt; d; di ++ &#123;</span><br><span class="line">						<span class="keyword">for</span> dj := di + <span class="number">1</span>; dj &lt; d;  dj ++&#123;</span><br><span class="line">							cols[i][y + di] = dj - di + <span class="number">1</span></span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				y = <span class="number">-1</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; r; i ++ &#123;</span><br><span class="line">		x := <span class="number">-1</span></span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; c;	j ++  &#123;</span><br><span class="line">			<span class="keyword">if</span> grid[i][j] == <span class="number">1</span>&#123;</span><br><span class="line">				<span class="keyword">if</span> x == <span class="number">-1</span> &#123;</span><br><span class="line">					x = j</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> x != <span class="number">-1</span> &amp;&amp;(grid[i][j] != <span class="number">1</span>  || j == c - <span class="number">1</span>)&#123;</span><br><span class="line">				d := j - x</span><br><span class="line">				<span class="keyword">if</span> j == c - <span class="number">1</span> &amp;&amp; grid[i][j] == <span class="number">1</span>&#123;</span><br><span class="line">					d ++</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> d &gt; <span class="number">1</span> &#123;</span><br><span class="line">					<span class="keyword">for</span> di := <span class="number">0</span>; di &lt; d; di ++ &#123;</span><br><span class="line">						<span class="keyword">for</span> dj := di + <span class="number">1</span>; dj &lt; d;  dj ++&#123;</span><br><span class="line">							hx := x + di</span><br><span class="line">							hy := i</span><br><span class="line">							tx := x + dj</span><br><span class="line">							ty := i</span><br><span class="line">							l := dj - di + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">							<span class="keyword">if</span> l % <span class="number">2</span> == <span class="number">0</span> &amp;&amp; l &gt;= <span class="number">4</span>&#123;</span><br><span class="line">								chy := hy - l / <span class="number">2</span> + <span class="number">1</span></span><br><span class="line">								cty := ty - l / <span class="number">2</span> + <span class="number">1</span></span><br><span class="line">								<span class="keyword">if</span> chy &gt;= <span class="number">0</span> &#123;</span><br><span class="line">									<span class="keyword">if</span> n := cols[hx][chy]; n &gt;= l / <span class="number">2</span>&#123;</span><br><span class="line">										count ++</span><br><span class="line">									&#125;</span><br><span class="line">								&#125;</span><br><span class="line">								<span class="keyword">if</span> n := cols[hx][hy]; n &gt;= l / <span class="number">2</span> &#123;</span><br><span class="line">									count ++</span><br><span class="line">								&#125;</span><br><span class="line">								<span class="keyword">if</span> cty &gt;= <span class="number">0</span> &#123;</span><br><span class="line">									<span class="keyword">if</span> n := cols[tx][cty]; n &gt;= l / <span class="number">2</span>&#123;</span><br><span class="line">										count ++</span><br><span class="line">									&#125;</span><br><span class="line">								&#125;</span><br><span class="line">								<span class="keyword">if</span> n := cols[tx][ty]; n &gt;= l / <span class="number">2</span> &#123;</span><br><span class="line">									count ++</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;</span><br><span class="line">							chy := hy - l * <span class="number">2</span> + <span class="number">1</span></span><br><span class="line">							cty := ty - l * <span class="number">2</span> + <span class="number">1</span></span><br><span class="line">							<span class="keyword">if</span> chy &gt;= <span class="number">0</span> &#123;</span><br><span class="line">								<span class="keyword">if</span> n := cols[hx][chy]; n &gt;= l * <span class="number">2</span> &#123;</span><br><span class="line">									count ++</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;</span><br><span class="line">							<span class="keyword">if</span> n := cols[hx][hy]; n &gt;= l * <span class="number">2</span> &#123;</span><br><span class="line">								count ++</span><br><span class="line">							&#125;</span><br><span class="line">							<span class="keyword">if</span> cty &gt;= <span class="number">0</span> &#123;</span><br><span class="line">								<span class="keyword">if</span> n := cols[tx][cty]; n &gt;= l * <span class="number">2</span> &#123;</span><br><span class="line">									count ++</span><br><span class="line">								&#125;</span><br><span class="line">							&#125;</span><br><span class="line">							<span class="keyword">if</span> n := cols[tx][ty]; n &gt;= l * <span class="number">2</span> &#123;</span><br><span class="line">								count ++</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				x = <span class="number">-1</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	res = <span class="built_in">append</span>(res, count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	t := readInts(in)[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t; i ++ &#123;</span><br><span class="line">		solve()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> res &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Case #%d: %d\n"</span>, i + <span class="number">1</span>, v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readline</span><span class="params">(in *bufio.Reader)</span> <span class="title">string</span></span>&#123;</span><br><span class="line">	line, _ := in.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">	<span class="keyword">return</span> line[<span class="number">0</span>:<span class="built_in">len</span>(line) - <span class="number">1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readInts</span><span class="params">(in *bufio.Reader)</span> []<span class="title">int</span></span>&#123;</span><br><span class="line">	line := readline(in)</span><br><span class="line">	arr := strings.Split(line, <span class="string">" "</span>)</span><br><span class="line">	res := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">for</span> _, str := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		v, _ := strconv.ParseInt(str, <span class="number">10</span>, <span class="number">64</span>)</span><br><span class="line">		res = <span class="built_in">append</span>(res, <span class="keyword">int</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2096,148 +2273,6 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/" itemprop="url">Spring Cloud Eureka 使用Nginx做路由网关</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:46:21+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一-起始"><a class="header-anchor" href="#一-起始">¶</a>一、起始</h2>
-<p>在分布式系统的体系中，注册中心的作用及其重要，每个服务可以将自己注册到Eureka中，然后通过心跳包去实时获取注册中心的服务列表，因此达到分布式环境下的Rpc调用及负载。</p>
-<p>但是如果使用Eureka做负载均衡，那么将会面临着一个问题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果要调整负载均衡方案，例如复杂的加权，那么整个系统就要面临着停服的尴尬。</span><br></pre></td></tr></table></figure>
-<p>那么我们能不能将负载均衡交给系统之外的中间件处理？本文就拿Spring Cloud环境来举例如何将配置Eureka Client以至将负载的主动权交给Nginx！</p>
-<h2 id="二-可行性"><a class="header-anchor" href="#二-可行性">¶</a>二、可行性</h2>
-<p>各服务注册在Eureka上的可识别HOST默认是本机IP，也就是<strong>ipAddress</strong>这个参数，各个服务从Eureka获取的服务列表大多数情况下是<strong>ipAddress:port</strong>的搭配形式，而Nginx通常通过<strong>server_name</strong>来监听<strong>80</strong>端口去转发各个请求，<strong>server_name</strong>为域名的形式，那么我们只需要想办法将注册列表的搭配变成如下方式即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipAddress = account.xt.org</span><br><span class="line">port = 80</span><br></pre></td></tr></table></figure>
-<p>也就是说从Eureka上获得的服务列表将会是<strong>account.application.api:80</strong>，那么这个想法到底能不能做到呢？</p>
-<p>我们都知道Spring Cloud提供了Eureka的配置方式，配置域有两个，他们分别是<strong>Client</strong>和<strong>Instance</strong>，而关于网络方面的配置大多在后者，其中有两个参数恰好符合我们上述要求：</p>
-<ul>
-<li>IpAddress：实例IP</li>
-<li>NonSecurePort：获取该实例应该接收通信的非安全端口，在Spring Cloud中默认为服务的IP</li>
-</ul>
-<h2 id="三-实现"><a class="header-anchor" href="#三-实现">¶</a>三、实现</h2>
-<p>接下来我们需要将IpAddress配置成我们需要的域名，NonSecurePort配置为80（不配置默认会赋值为当前服务的端口号）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    serviceUrl:</span><br><span class="line">      defaultZone: @serviceUrl@</span><br><span class="line">    registryFetchIntervalSeconds: 5</span><br><span class="line">  instance:</span><br><span class="line">    preferIpAddress: true</span><br><span class="line">    ipAddress: account.xt.org</span><br><span class="line">    nonSecurePort: 80</span><br><span class="line">    lease-renewal-interval-in-seconds: 10</span><br><span class="line">    lease-expiration-duration-in-seconds: 90</span><br><span class="line">    instance-id: $&#123;spring.cloud.client.ipAddress&#125;:$&#123;spring.application.name&#125;:$&#123;server.port&#125;</span><br></pre></td></tr></table></figure>
-<p>至此，我们的服务间便可以通过域名进行RPC调用，我们可以通过Eureka提供的Rest Operations查看方才修改的服务的注册信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">curl GET http://localhost:8089/eureka/apps/SERVICE-XTOKEN-ACCOUNT</span><br><span class="line">RESPONSE:</span><br><span class="line">&lt;application&gt;</span><br><span class="line">    &lt;name&gt;SERVICE-XTOKEN-ACCOUNT&lt;/name&gt;</span><br><span class="line">    &lt;instance&gt;</span><br><span class="line">        &lt;instanceId&gt;192.168.50.200:service-xtoken-account:8094&lt;/instanceId&gt;</span><br><span class="line">        &lt;hostName&gt;account.xt.org&lt;/hostName&gt;</span><br><span class="line">        &lt;app&gt;SERVICE-XTOKEN-ACCOUNT&lt;/app&gt;</span><br><span class="line">        &lt;ipAddr&gt;account.xt.org&lt;/ipAddr&gt;</span><br><span class="line">        &lt;status&gt;UP&lt;/status&gt;</span><br><span class="line">        &lt;overriddenstatus&gt;UNKNOWN&lt;/overriddenstatus&gt;</span><br><span class="line">        &lt;port enabled=&quot;true&quot;&gt;80&lt;/port&gt;</span><br><span class="line">        &lt;securePort enabled=&quot;false&quot;&gt;443&lt;/securePort&gt;</span><br><span class="line">        &lt;countryId&gt;1&lt;/countryId&gt;</span><br><span class="line">        &lt;dataCenterInfo class=&quot;com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo&quot;&gt;</span><br><span class="line">            &lt;name&gt;MyOwn&lt;/name&gt;</span><br><span class="line">        &lt;/dataCenterInfo&gt;</span><br><span class="line">        &lt;leaseInfo&gt;</span><br><span class="line">            &lt;renewalIntervalInSecs&gt;10&lt;/renewalIntervalInSecs&gt;</span><br><span class="line">            &lt;durationInSecs&gt;90&lt;/durationInSecs&gt;</span><br><span class="line">            &lt;registrationTimestamp&gt;1537168990103&lt;/registrationTimestamp&gt;</span><br><span class="line">            &lt;lastRenewalTimestamp&gt;1537171761036&lt;/lastRenewalTimestamp&gt;</span><br><span class="line">            &lt;evictionTimestamp&gt;0&lt;/evictionTimestamp&gt;</span><br><span class="line">            &lt;serviceUpTimestamp&gt;1537168990103&lt;/serviceUpTimestamp&gt;</span><br><span class="line">        &lt;/leaseInfo&gt;</span><br><span class="line">        &lt;metadata&gt;</span><br><span class="line">            &lt;management.port&gt;8094&lt;/management.port&gt;</span><br><span class="line">        &lt;/metadata&gt;</span><br><span class="line">        &lt;homePageUrl&gt;http://account.xt.org:80/&lt;/homePageUrl&gt;</span><br><span class="line">        &lt;statusPageUrl&gt;http://192.168.50.200:8094/info&lt;/statusPageUrl&gt;</span><br><span class="line">        &lt;healthCheckUrl&gt;http://192.168.50.200:8094/health&lt;/healthCheckUrl&gt;</span><br><span class="line">        &lt;vipAddress&gt;service-xtoken-account&lt;/vipAddress&gt;</span><br><span class="line">        &lt;secureVipAddress&gt;service-xtoken-account&lt;/secureVipAddress&gt;</span><br><span class="line">        &lt;isCoordinatingDiscoveryServer&gt;false&lt;/isCoordinatingDiscoveryServer&gt;</span><br><span class="line">        &lt;lastUpdatedTimestamp&gt;1537168990103&lt;/lastUpdatedTimestamp&gt;</span><br><span class="line">        &lt;lastDirtyTimestamp&gt;1537168990048&lt;/lastDirtyTimestamp&gt;</span><br><span class="line">        &lt;actionType&gt;ADDED&lt;/actionType&gt;</span><br><span class="line">    &lt;/instance&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure>
-<p>我们发现ipAddr和port两个参数已经变成了我们想要的结果！</p>
-<p>不过这时的域名我们的网关是识别不了的，需要我们去本机的Hosts文件中配置一下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## 其他配置</span><br><span class="line">..</span><br><span class="line">..</span><br><span class="line">127.0.0.1 account.xt.org</span><br></pre></td></tr></table></figure>
-<p>然后Nginx配置一个代理即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  account.xt.org;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass  http://127.0.0.1:8094;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2290,7 +2325,7 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

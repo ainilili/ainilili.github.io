@@ -191,6 +191,26 @@
         </li>
       
         
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -219,6 +239,148 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Eureka-使用Nginx做路由网关/" itemprop="url">Spring Cloud Eureka 使用Nginx做路由网关</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:46:21+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一-起始"><a class="header-anchor" href="#一-起始">¶</a>一、起始</h2>
+<p>在分布式系统的体系中，注册中心的作用及其重要，每个服务可以将自己注册到Eureka中，然后通过心跳包去实时获取注册中心的服务列表，因此达到分布式环境下的Rpc调用及负载。</p>
+<p>但是如果使用Eureka做负载均衡，那么将会面临着一个问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果要调整负载均衡方案，例如复杂的加权，那么整个系统就要面临着停服的尴尬。</span><br></pre></td></tr></table></figure>
+<p>那么我们能不能将负载均衡交给系统之外的中间件处理？本文就拿Spring Cloud环境来举例如何将配置Eureka Client以至将负载的主动权交给Nginx！</p>
+<h2 id="二-可行性"><a class="header-anchor" href="#二-可行性">¶</a>二、可行性</h2>
+<p>各服务注册在Eureka上的可识别HOST默认是本机IP，也就是<strong>ipAddress</strong>这个参数，各个服务从Eureka获取的服务列表大多数情况下是<strong>ipAddress:port</strong>的搭配形式，而Nginx通常通过<strong>server_name</strong>来监听<strong>80</strong>端口去转发各个请求，<strong>server_name</strong>为域名的形式，那么我们只需要想办法将注册列表的搭配变成如下方式即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipAddress = account.xt.org</span><br><span class="line">port = 80</span><br></pre></td></tr></table></figure>
+<p>也就是说从Eureka上获得的服务列表将会是<strong>account.application.api:80</strong>，那么这个想法到底能不能做到呢？</p>
+<p>我们都知道Spring Cloud提供了Eureka的配置方式，配置域有两个，他们分别是<strong>Client</strong>和<strong>Instance</strong>，而关于网络方面的配置大多在后者，其中有两个参数恰好符合我们上述要求：</p>
+<ul>
+<li>IpAddress：实例IP</li>
+<li>NonSecurePort：获取该实例应该接收通信的非安全端口，在Spring Cloud中默认为服务的IP</li>
+</ul>
+<h2 id="三-实现"><a class="header-anchor" href="#三-实现">¶</a>三、实现</h2>
+<p>接下来我们需要将IpAddress配置成我们需要的域名，NonSecurePort配置为80（不配置默认会赋值为当前服务的端口号）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    serviceUrl:</span><br><span class="line">      defaultZone: @serviceUrl@</span><br><span class="line">    registryFetchIntervalSeconds: 5</span><br><span class="line">  instance:</span><br><span class="line">    preferIpAddress: true</span><br><span class="line">    ipAddress: account.xt.org</span><br><span class="line">    nonSecurePort: 80</span><br><span class="line">    lease-renewal-interval-in-seconds: 10</span><br><span class="line">    lease-expiration-duration-in-seconds: 90</span><br><span class="line">    instance-id: $&#123;spring.cloud.client.ipAddress&#125;:$&#123;spring.application.name&#125;:$&#123;server.port&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，我们的服务间便可以通过域名进行RPC调用，我们可以通过Eureka提供的Rest Operations查看方才修改的服务的注册信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">curl GET http://localhost:8089/eureka/apps/SERVICE-XTOKEN-ACCOUNT</span><br><span class="line">RESPONSE:</span><br><span class="line">&lt;application&gt;</span><br><span class="line">    &lt;name&gt;SERVICE-XTOKEN-ACCOUNT&lt;/name&gt;</span><br><span class="line">    &lt;instance&gt;</span><br><span class="line">        &lt;instanceId&gt;192.168.50.200:service-xtoken-account:8094&lt;/instanceId&gt;</span><br><span class="line">        &lt;hostName&gt;account.xt.org&lt;/hostName&gt;</span><br><span class="line">        &lt;app&gt;SERVICE-XTOKEN-ACCOUNT&lt;/app&gt;</span><br><span class="line">        &lt;ipAddr&gt;account.xt.org&lt;/ipAddr&gt;</span><br><span class="line">        &lt;status&gt;UP&lt;/status&gt;</span><br><span class="line">        &lt;overriddenstatus&gt;UNKNOWN&lt;/overriddenstatus&gt;</span><br><span class="line">        &lt;port enabled=&quot;true&quot;&gt;80&lt;/port&gt;</span><br><span class="line">        &lt;securePort enabled=&quot;false&quot;&gt;443&lt;/securePort&gt;</span><br><span class="line">        &lt;countryId&gt;1&lt;/countryId&gt;</span><br><span class="line">        &lt;dataCenterInfo class=&quot;com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo&quot;&gt;</span><br><span class="line">            &lt;name&gt;MyOwn&lt;/name&gt;</span><br><span class="line">        &lt;/dataCenterInfo&gt;</span><br><span class="line">        &lt;leaseInfo&gt;</span><br><span class="line">            &lt;renewalIntervalInSecs&gt;10&lt;/renewalIntervalInSecs&gt;</span><br><span class="line">            &lt;durationInSecs&gt;90&lt;/durationInSecs&gt;</span><br><span class="line">            &lt;registrationTimestamp&gt;1537168990103&lt;/registrationTimestamp&gt;</span><br><span class="line">            &lt;lastRenewalTimestamp&gt;1537171761036&lt;/lastRenewalTimestamp&gt;</span><br><span class="line">            &lt;evictionTimestamp&gt;0&lt;/evictionTimestamp&gt;</span><br><span class="line">            &lt;serviceUpTimestamp&gt;1537168990103&lt;/serviceUpTimestamp&gt;</span><br><span class="line">        &lt;/leaseInfo&gt;</span><br><span class="line">        &lt;metadata&gt;</span><br><span class="line">            &lt;management.port&gt;8094&lt;/management.port&gt;</span><br><span class="line">        &lt;/metadata&gt;</span><br><span class="line">        &lt;homePageUrl&gt;http://account.xt.org:80/&lt;/homePageUrl&gt;</span><br><span class="line">        &lt;statusPageUrl&gt;http://192.168.50.200:8094/info&lt;/statusPageUrl&gt;</span><br><span class="line">        &lt;healthCheckUrl&gt;http://192.168.50.200:8094/health&lt;/healthCheckUrl&gt;</span><br><span class="line">        &lt;vipAddress&gt;service-xtoken-account&lt;/vipAddress&gt;</span><br><span class="line">        &lt;secureVipAddress&gt;service-xtoken-account&lt;/secureVipAddress&gt;</span><br><span class="line">        &lt;isCoordinatingDiscoveryServer&gt;false&lt;/isCoordinatingDiscoveryServer&gt;</span><br><span class="line">        &lt;lastUpdatedTimestamp&gt;1537168990103&lt;/lastUpdatedTimestamp&gt;</span><br><span class="line">        &lt;lastDirtyTimestamp&gt;1537168990048&lt;/lastDirtyTimestamp&gt;</span><br><span class="line">        &lt;actionType&gt;ADDED&lt;/actionType&gt;</span><br><span class="line">    &lt;/instance&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure>
+<p>我们发现ipAddr和port两个参数已经变成了我们想要的结果！</p>
+<p>不过这时的域名我们的网关是识别不了的，需要我们去本机的Hosts文件中配置一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## 其他配置</span><br><span class="line">..</span><br><span class="line">..</span><br><span class="line">127.0.0.1 account.xt.org</span><br></pre></td></tr></table></figure>
+<p>然后Nginx配置一个代理即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  account.xt.org;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass  http://127.0.0.1:8094;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -910,7 +1072,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
