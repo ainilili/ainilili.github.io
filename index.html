@@ -253,6 +253,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/22/Kick-Start-Round-A-2021-Rabbit-House/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/Kick-Start-Round-A-2021-Rabbit-House/" itemprop="url">Kick Start Round A 2021 -  Rabbit House</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T12:33:00+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>原题地址: <a href="https://codingcompetitions.withgoogle.com/kickstart/round/0000000000436140/000000000068cb14" target="_blank" rel="noopener">传送门</a></p>
+<h3 id="分析"><a class="header-anchor" href="#分析">¶</a>分析</h3>
+<p>对于英文弱鸡的笔者，这道题着实看了很久才看懂题意，同样在一个二维平面内存在着<code>R * C</code>的格子，且每个格子都会有<code>0≤ Gi,j ≤2*10^6</code>各盒子，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0 0 0</span><br><span class="line">0 2 0</span><br><span class="line">0 0 0</span><br></pre></td></tr></table></figure>
+<p>上述表示R为3，C为3的格子，中间格子的盒子数量为2，其余格子盒子数量为0。</p>
+<p>描述到此为止，最终问题是求输入的R*C的格子中，如果要保证每个格子与相邻格子的盒子数量差在1以内，需要在当前规格的基础上，至少增加多少个盒子？</p>
+<p>因为最终要保证整个平面内，所有的格子高度差绝对值 &lt;= 1，所以应该从最高的格子开始，让其相邻格子条件，之后除去当前格子，再取剩下格子中最高的格子循环处理，直到当前最高的格子高度为1时结束循环，将新增的盒子数作为答案输出。</p>
+<p>分析后的问题转化为将格子从高到低排列，并优先取出最高的格子做处理，并且格子的高度排列是会随着处理过程发生变化，所以使用优先队列处理之！</p>
+<h3 id="solve"><a class="header-anchor" href="#solve">¶</a>Solve</h3>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bufio"</span></span><br><span class="line">	<span class="string">"container/heap"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> in = bufio.NewReader(os.Stdin)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">solve</span><span class="params">()</span></span>&#123;</span><br><span class="line">	inputs := readInts(in)</span><br><span class="line">	r := inputs[<span class="number">0</span>]</span><br><span class="line">	c := inputs[<span class="number">1</span>]</span><br><span class="line">	grid := <span class="built_in">make</span>([][]<span class="keyword">int</span>, r)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; r; i ++ &#123;</span><br><span class="line">		grid[i] = readInts(in)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	nodes := &amp;nodes&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; r; i ++ &#123;</span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; c; j++ &#123;</span><br><span class="line">			heap.Push(nodes, node&#123;</span><br><span class="line">				val: grid[i][j],</span><br><span class="line">				x: j,</span><br><span class="line">				y: i,</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	m := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> ;;&#123;</span><br><span class="line">		<span class="keyword">if</span> nodes.Len() == <span class="number">0</span>&#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		n := heap.Pop(nodes).(node)</span><br><span class="line">		<span class="keyword">if</span> n.val != grid[n.y][n.x] &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> n.x &gt; <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> n.val - grid[n.y][n.x - <span class="number">1</span>] &gt; <span class="number">1</span>&#123;</span><br><span class="line">				m += n.val - grid[n.y][n.x - <span class="number">1</span>] - <span class="number">1</span></span><br><span class="line">				grid[n.y][n.x - <span class="number">1</span>] = n.val - <span class="number">1</span></span><br><span class="line">				heap.Push(nodes, node&#123;</span><br><span class="line">					val: grid[n.y][n.x - <span class="number">1</span>],</span><br><span class="line">					x: n.x - <span class="number">1</span>,</span><br><span class="line">					y: n.y,</span><br><span class="line">				&#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> n.x &lt; c <span class="number">-1</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> n.val - grid[n.y][n.x + <span class="number">1</span>] &gt; <span class="number">1</span>&#123;</span><br><span class="line">				m += n.val - grid[n.y][n.x + <span class="number">1</span>] - <span class="number">1</span></span><br><span class="line">				grid[n.y][n.x + <span class="number">1</span>] = n.val - <span class="number">1</span></span><br><span class="line">				heap.Push(nodes, node&#123;</span><br><span class="line">					val: grid[n.y][n.x + <span class="number">1</span>],</span><br><span class="line">					x: n.x + <span class="number">1</span>,</span><br><span class="line">					y: n.y,</span><br><span class="line">				&#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> n.y &gt; <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> n.val - grid[n.y - <span class="number">1</span>][n.x] &gt; <span class="number">1</span>&#123;</span><br><span class="line">				m += n.val - grid[n.y - <span class="number">1</span>][n.x] - <span class="number">1</span></span><br><span class="line">				grid[n.y - <span class="number">1</span>][n.x] = n.val - <span class="number">1</span></span><br><span class="line">				heap.Push(nodes, node&#123;</span><br><span class="line">					val: grid[n.y - <span class="number">1</span>][n.x],</span><br><span class="line">					x: n.x,</span><br><span class="line">					y: n.y - <span class="number">1</span>,</span><br><span class="line">				&#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> n.y &lt; r - <span class="number">1</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> n.val - grid[n.y + <span class="number">1</span>][n.x] &gt; <span class="number">1</span>&#123;</span><br><span class="line">				m += n.val - grid[n.y + <span class="number">1</span>][n.x] - <span class="number">1</span></span><br><span class="line">				grid[n.y + <span class="number">1</span>][n.x] = n.val - <span class="number">1</span></span><br><span class="line">				heap.Push(nodes, node&#123;</span><br><span class="line">					val: grid[n.y + <span class="number">1</span>][n.x],</span><br><span class="line">					x: n.x,</span><br><span class="line">					y: n.y + <span class="number">1</span>,</span><br><span class="line">				&#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	res = <span class="built_in">append</span>(res, m)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	t := readInts(in)[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t; i ++ &#123;</span><br><span class="line">		solve()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> res &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Case #%d: %d\n"</span>, i + <span class="number">1</span>, v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readline</span><span class="params">(in *bufio.Reader)</span> <span class="title">string</span></span>&#123;</span><br><span class="line">	line, _ := in.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">	<span class="keyword">return</span> line[<span class="number">0</span>:<span class="built_in">len</span>(line) - <span class="number">1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readInts</span><span class="params">(in *bufio.Reader)</span> []<span class="title">int</span></span>&#123;</span><br><span class="line">	line := readline(in)</span><br><span class="line">	arr := strings.Split(line, <span class="string">" "</span>)</span><br><span class="line">	res := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">for</span> _, str := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		v, _ := strconv.ParseInt(str, <span class="number">10</span>, <span class="number">64</span>)</span><br><span class="line">		res = <span class="built_in">append</span>(res, <span class="keyword">int</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> node <span class="keyword">struct</span> &#123;</span><br><span class="line">	val <span class="keyword">int</span></span><br><span class="line">	x <span class="keyword">int</span></span><br><span class="line">	y <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> nodes []node</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(*t) <span class="comment">//</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Less</span><span class="params">(i, j <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> (*t)[i].val &gt;= (*t)[j].val</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Swap</span><span class="params">(i, j <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	(*t)[i], (*t)[j] = (*t)[j], (*t)[i]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Push</span><span class="params">(x <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	*t = <span class="built_in">append</span>(*t, x.(node))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Pop</span><span class="params">()</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	n := <span class="built_in">len</span>(*t)</span><br><span class="line">	<span class="keyword">if</span> n &gt; <span class="number">0</span> &#123;</span><br><span class="line">		x := (*t)[n<span class="number">-1</span>]</span><br><span class="line">		*t = (*t)[:n<span class="number">-1</span>]</span><br><span class="line">		<span class="keyword">return</span> x</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *nodes)</span> <span class="title">Peek</span><span class="params">()</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	n := <span class="built_in">len</span>(*t)</span><br><span class="line">	<span class="keyword">if</span> n &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> (*t)[<span class="number">0</span>]</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/22/Kick-Start-Round-A-2021-L-Shaped-Plots/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2134,145 +2284,6 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Config-入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/Spring-Cloud-Config-入门/" itemprop="url">Spring Cloud Config 入门</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:47:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一-依赖配置"><a class="header-anchor" href="#一-依赖配置">¶</a>一、依赖配置</h2>
-<p>Maven依赖配置只是配置中心需要的配置，其他配置自加，本文仅以扩展为目标~</p>
-<h4 id="客户端"><a class="header-anchor" href="#客户端">¶</a>客户端</h4>
-<p>Maven配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-config&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>Main</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableConfigServer</span><br><span class="line">public class ConfigApp &#123;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) throws Exception &#123;</span><br><span class="line">		SpringApplication.run(ConfigApp.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>application.yml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8087</span><br><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      label: master</span><br><span class="line">      server:</span><br><span class="line">        git:</span><br><span class="line">          uri: git配置仓库http地址</span><br><span class="line">          username: xxx</span><br><span class="line">          password: xxx</span><br></pre></td></tr></table></figure>
-<h4 id="配置服务端"><a class="header-anchor" href="#配置服务端">¶</a>配置服务端</h4>
-<p>Maven配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-config-server&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>application.yml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    config:</span><br><span class="line">      profile: dev</span><br><span class="line">      label: master</span><br><span class="line">      uri: http://localhost:8087/</span><br></pre></td></tr></table></figure>
-<h2 id="二-映射规则"><a class="header-anchor" href="#二-映射规则">¶</a>二、映射规则</h2>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/&#123;application&#125;/&#123;profile&#125;[/&#123;label&#125;]</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;application&#125;-&#123;profile&#125;.properties</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.yml</span><br><span class="line">/&#123;label&#125;/&#123;application&#125;-&#123;profile&#125;.properties</span><br></pre></td></tr></table></figure>
-<p>application：服务名<br>
-profile：环境<code>dev/test/pro</code><br>
-lable：分支</p>
-<p>仓库根目录下可以用<code>application.yml</code>作为全局配置，所有服务共享</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2325,7 +2336,7 @@ lable：分支</p>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
