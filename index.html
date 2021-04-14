@@ -253,6 +253,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/14/Google-Code-Jam-Round-1A-2021-Rabbit-House/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/14/Google-Code-Jam-Round-1A-2021-Rabbit-House/" itemprop="url">Round 1A 2021 - Code Jam 2021 -  Append Sort</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-14T21:37:00+08:00">
+                2021-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>原题地址: <a href="https://codingcompetitions.withgoogle.com/codejam/round/000000000043585d/00000000007549e5" target="_blank" rel="noopener">传送门</a></p>
+<h3 id="分析"><a class="header-anchor" href="#分析">¶</a>分析</h3>
+<p>题目要求是对于输入的<code>X1,X2,…,XN</code>，求至少在每个数字后方增加多少个的<code>0-9</code>来保证<code>X1,X2,…,XN</code>的递增顺序。</p>
+<p>举个例子，输入集为<code>98,9,8</code>，很明显当前顺序不是递增的，如果要保证顺序递增，需要在保证数组第二个元素大于第一个元素，第三个元素大于第二个元素。在不考虑题目中添加位数数量限制的情况下，<code>98,900,8000</code>这种通过保证每个元素之间总位数差为1的方案也是蛮不错的，但是如果要求增加尽可能少的位数来达到题目要求，最佳方案为<code>98,99,900</code>，也就是说我们要做到尽可能保证后一个元素的值尽可能接近前一个元素的值。</p>
+<p>再举个例子，输入集为<code>1,1,1,1,1,1,1,1,1,1,1,1,1,1</code>，那么补全后的结果应该为<code>1 10 11 12 13 14 15 16 17 18 19 100 101 102</code>。</p>
+<p>另外需要注意，此题有两个测试集，Test1还好，每次输入集的<code>X</code>数量以及范围都比较小，用<code>int</code>完全可以搞定，但是对于Test2来说，int不一定能够满足，当<code>X</code>的最大值为<code>10^9</code>，<code>N</code>为100时，在极端情况下（前一个元素总是比后一个元素大），最终补全后的结果的位数最大为<code>10 + 100 - 1 = 109</code>位，此时用int将会溢出导致结果错误，可以通过使用bigint或者自己将大数按位拆位数组来避免溢出的问题！</p>
+<h3 id="solve"><a class="header-anchor" href="#solve">¶</a>Solve</h3>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bufio"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"math"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">var</span> in = bufio.NewReader(os.Stdin)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">solve</span><span class="params">()</span></span>&#123;</span><br><span class="line">	inputs := readInts(in)</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	nums := readInts(in)</span><br><span class="line">	preMark := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">110</span>)</span><br><span class="line">	nextMark := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">110</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; inputs[<span class="number">0</span>]; i ++&#123;</span><br><span class="line">		<span class="keyword">if</span> i == <span class="number">0</span>&#123;</span><br><span class="line">			markFlush(preMark, nums[i])</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		preL := markLen(preMark)</span><br><span class="line">		markFlush(nextMark, nums[i])</span><br><span class="line">		nextL := markLen(nextMark)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> preL &gt; nextL &#123;</span><br><span class="line">			diff := preL - nextL</span><br><span class="line">			<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; nextL; j ++ &#123;</span><br><span class="line">				pv := preMark[j]</span><br><span class="line">				nv := nextMark[j]</span><br><span class="line">				<span class="keyword">if</span> nv &gt; pv &#123;</span><br><span class="line">					<span class="keyword">for</span> k := <span class="number">0</span>; k &lt; diff; k ++&#123;</span><br><span class="line">						nextMark[nextL + k] = <span class="number">0</span></span><br><span class="line">					&#125;</span><br><span class="line">					count += diff</span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;<span class="keyword">else</span> <span class="keyword">if</span> nv &lt; pv &#123;</span><br><span class="line">					<span class="keyword">for</span> k := <span class="number">0</span>; k &lt; diff + <span class="number">1</span>; k ++&#123;</span><br><span class="line">						nextMark[nextL + k] = <span class="number">0</span></span><br><span class="line">					&#125;</span><br><span class="line">					count += diff + <span class="number">1</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;<span class="keyword">else</span> <span class="keyword">if</span> j == nextL - <span class="number">1</span>&#123;</span><br><span class="line">					<span class="keyword">for</span> k := <span class="number">0</span>; k &lt; diff; k ++&#123;</span><br><span class="line">						nextMark[nextL + k] = preMark[nextL + k]</span><br><span class="line">					&#125;</span><br><span class="line">					count += diff</span><br><span class="line">					<span class="keyword">for</span> k := preL - <span class="number">1</span>; k &gt; nextL - <span class="number">1</span>; k --&#123;</span><br><span class="line">						nextMark[k] ++</span><br><span class="line">						<span class="keyword">if</span> nextMark[k] &lt; <span class="number">10</span>&#123;</span><br><span class="line">							<span class="keyword">break</span></span><br><span class="line">						&#125;</span><br><span class="line">						nextMark[k] = <span class="number">0</span></span><br><span class="line">						<span class="keyword">if</span> k == nextL &#123;</span><br><span class="line">							nextMark[preL] = <span class="number">0</span></span><br><span class="line">							count ++</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span> preL == nextL&#123;</span><br><span class="line">			<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; preL; j ++ &#123;</span><br><span class="line">				pv := preMark[j]</span><br><span class="line">				nv := nextMark[j]</span><br><span class="line">				<span class="keyword">if</span> nv &gt; pv &#123;</span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> nv &lt; pv || (nv == pv &amp;&amp; j == preL - <span class="number">1</span>)&#123;</span><br><span class="line">					count ++</span><br><span class="line">					nextMark[nextL] = <span class="number">0</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">copy</span>(preMark, nextMark)</span><br><span class="line">	&#125;</span><br><span class="line">	res = <span class="built_in">append</span>(res, count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">markLen</span><span class="params">(mark []<span class="keyword">int</span>)</span> <span class="title">int</span></span>&#123;</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> ; count &lt; <span class="built_in">len</span>(mark); count++ &#123;</span><br><span class="line">		<span class="keyword">if</span> mark[count] == <span class="number">-1</span> &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> count</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">markFlush</span><span class="params">(mark []<span class="keyword">int</span>, num <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	l := numLen(num)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(mark); i ++ &#123;</span><br><span class="line">		<span class="keyword">if</span> i &lt; l &#123;</span><br><span class="line">			mark[i] = num / pow(<span class="number">10</span>, l - i - <span class="number">1</span>) % <span class="number">10</span></span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			mark[i] = <span class="number">-1</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">pow</span><span class="params">(a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">int</span>(math.Pow(<span class="keyword">float64</span>(a), <span class="keyword">float64</span>(b)))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">numLen</span><span class="params">(num <span class="keyword">int</span>)</span> <span class="title">int</span></span>&#123;</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> num &lt;= <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		num = num / <span class="number">10</span></span><br><span class="line">		count ++</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> count</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	t := readInts(in)[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t; i ++ &#123;</span><br><span class="line">		solve()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> res &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Case #%d: %d\n"</span>, i + <span class="number">1</span>, v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readline</span><span class="params">(in *bufio.Reader)</span> <span class="title">string</span></span>&#123;</span><br><span class="line">	line, _ := in.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">	<span class="keyword">return</span> line[<span class="number">0</span>:<span class="built_in">len</span>(line) - <span class="number">1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readInts</span><span class="params">(in *bufio.Reader)</span> []<span class="title">int</span></span>&#123;</span><br><span class="line">	line := readline(in)</span><br><span class="line">	arr := strings.Split(line, <span class="string">" "</span>)</span><br><span class="line">	res := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">for</span> _, str := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		v, _ := strconv.ParseInt(str, <span class="number">10</span>, <span class="number">64</span>)</span><br><span class="line">		res = <span class="built_in">append</span>(res, <span class="keyword">int</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/22/Kick-Start-Round-A-2021-Rabbit-House/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2078,212 +2226,6 @@ Your project can build distribution “assemblies” easily, using one of the co
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Jenkins安装及自动部署Maven项目/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/Jenkins安装及自动部署Maven项目/" itemprop="url">Jenkins安装及自动部署Maven项目</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:47:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一-环境配置"><a class="header-anchor" href="#一-环境配置">¶</a>一、环境配置</h2>
-<h4 id="os版本"><a class="header-anchor" href="#os版本">¶</a>OS版本</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_11_centos /]# rpm -qa | grep centos-release</span><br><span class="line">centos-release-7-4.1708.el7.centos.x86_64</span><br></pre></td></tr></table></figure>
-<h4 id="java版本"><a class="header-anchor" href="#java版本">¶</a>Java版本</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_11_centos /]# java -version</span><br><span class="line">openjdk version &quot;1.8.0_181&quot;</span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_181-b13)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.181-b13, mixed mode)</span><br></pre></td></tr></table></figure>
-<h4 id="maven版本"><a class="header-anchor" href="#maven版本">¶</a>Maven版本</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_11_centos /]# mvn -v</span><br><span class="line">Apache Maven 3.0.5 (Red Hat 3.0.5-17)</span><br><span class="line">Maven home: /usr/share/maven</span><br><span class="line">Java version: 1.8.0_181, vendor: Oracle Corporation</span><br><span class="line">Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.181-3.b13.el7_5.x86_64/jre</span><br><span class="line">Default locale: en_US, platform encoding: UTF-8</span><br><span class="line">OS name: &quot;linux&quot;, version: &quot;3.10.0-693.el7.x86_64&quot;, arch: &quot;amd64&quot;, family: &quot;unix&quot;</span><br></pre></td></tr></table></figure>
-<h4 id="git版本"><a class="header-anchor" href="#git版本">¶</a>Git版本</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_11_centos /]# git --version</span><br><span class="line">git version 1.8.3.1</span><br></pre></td></tr></table></figure>
-<h2 id="二-安装"><a class="header-anchor" href="#二-安装">¶</a>二、安装</h2>
-<h4 id="java安装"><a class="header-anchor" href="#java安装">¶</a>Java安装</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install java-1.8.0-openjdk.x86_64</span><br></pre></td></tr></table></figure>
-<h4 id="maven安装"><a class="header-anchor" href="#maven安装">¶</a>Maven安装</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install maven</span><br></pre></td></tr></table></figure>
-<h4 id="git安装"><a class="header-anchor" href="#git安装">¶</a>Git安装</h4>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install git</span><br></pre></td></tr></table></figure>
-<h4 id="jenkins安装"><a class="header-anchor" href="#jenkins安装">¶</a>Jenkins安装</h4>
-<p>rpm包地址：<a href="https://pkg.jenkins.io/redhat-stable/" target="_blank" rel="noopener">https://pkg.jenkins.io/redhat-stable/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh xxx.npm</span><br></pre></td></tr></table></figure>
-<p>执行以上指令后即安装完毕，查看一下jenkins所在目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whereis jenkins</span><br></pre></td></tr></table></figure>
-<p>控制台输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_11_centos /]# whereis jenkins</span><br><span class="line">jenkins: /usr/lib/jenkins</span><br></pre></td></tr></table></figure>
-<p>默认jenkins的配置文件在<code>/etc/sysconfig/jenkins</code></p>
-<p>启动jenkins</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service jenkins start</span><br></pre></td></tr></table></figure>
-<p>关闭jenkins</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service jenkins stop</span><br></pre></td></tr></table></figure>
-<h2 id="三-jenkins部署maven项目"><a class="header-anchor" href="#三-jenkins部署maven项目">¶</a>三、Jenkins部署Maven项目</h2>
-<p>Jenkins启动只有的默认端口为8080，在保证服务器安全组开放8080端口（或者自己在<code>/etc/sysconfig/jenkins</code>配置文件中修改端口）的前提下，我们可以直接通过浏览器访问Jenkins</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://xxxxxx:8080</span><br></pre></td></tr></table></figure>
-<p>第一次进入Jenkins会让你走几个步骤</p>
-<ul>
-<li>输入管理员密码，密码可以从页面提示的文件中看到</li>
-<li>下载默认插件，点击官方推荐的按钮继续往下走</li>
-<li>设置账号密码和邮箱地址</li>
-<li>登入</li>
-</ul>
-<p>一顿操作，我们就来到了Jenkins的Dashboard页面<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6974344c0?w=1897&amp;h=598&amp;f=png&amp;s=72196" alt="这里写图片描述"></p>
-<p>看到这里是不是很激动？别急，Jenkins的新建任务默认是没有Maven选项的,需要自行安装Jenkins的Maven插件！</p>
-<h4 id="1-安装jenkins-maven插件maven-integration"><a class="header-anchor" href="#1-安装jenkins-maven插件maven-integration">¶</a>1、安装Jenkins-Maven插件Maven Integration</h4>
-<p>在首页中点击右侧的系统管理<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6976b76bd?w=1885&amp;h=613&amp;f=png&amp;s=75878" alt="这里写图片描述"><br>
-选择管理插件<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b697a978f8?w=1892&amp;h=862&amp;f=png&amp;s=133614" alt="这里写图片描述"><br>
-下载Maven Integration<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6979cd7a5?w=1892&amp;h=651&amp;f=png&amp;s=67831" alt="这里写图片描述"><br>
-点击立即获取之后，等待一分钟左右就下载好了</p>
-<h4 id="2-配置全局工具"><a class="header-anchor" href="#2-配置全局工具">¶</a>2、配置全局工具</h4>
-<p>接着我们要做一些工具的配置</p>
-<p>再次进入系统管理，点击列表中的<strong>全局工具配置</strong><br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b69783f279?w=1889&amp;h=827&amp;f=png&amp;s=128413" alt="这里写图片描述"><br>
-配置JDK<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b697743f0a?w=1529&amp;h=362&amp;f=png&amp;s=20752" alt="这里写图片描述"><br>
-配置Git<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6c277f7c6?w=1523&amp;h=320&amp;f=png&amp;s=17690" alt="这里写图片描述"><br>
-配置Maven<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6c740707d?w=1507&amp;h=331&amp;f=png&amp;s=19931" alt="这里写图片描述"><br>
-完毕之后点击<code>SAVE</code>按钮保存</p>
-<h4 id="3-配置任务信息"><a class="header-anchor" href="#3-配置任务信息">¶</a>3、配置任务信息</h4>
-<p>经过前面两个步骤，我们的Jenkins可以正式开始工作了，不过在真正为我们提供服务之前，我们需要告诉任务该做什么事情，该怎么做。</p>
-<p>例如？我们要构建的项目从何而来？通过什么样的方式或者指令就构建？不废话，开始创建一个新的任务，并且是一个Maven项目<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6c7c0c77f?w=1901&amp;h=614&amp;f=png&amp;s=60467" alt="这里写图片描述"><br>
-点击创建一个新任务进入下一步<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6ca5adfa0?w=1852&amp;h=933&amp;f=png&amp;s=132108" alt="这里写图片描述"><br>
-选择创建一个Maven项目，确定之后，进入任务配置界面</p>
-<p>任务信息配置<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6d06d8e2b?w=1882&amp;h=462&amp;f=png&amp;s=42624" alt="这里写图片描述"><br>
-源码库配置，Jenkins要知道如何获取到项目的源码<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6d2fca2f2?w=1887&amp;h=657&amp;f=png&amp;s=63920" alt="这里写图片描述"><br>
-Maven打包指令配置<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6e4036b64?w=1886&amp;h=425&amp;f=png&amp;s=37257" alt="这里写图片描述"><br>
-构建策略配置<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6eb145739?w=1879&amp;h=374&amp;f=png&amp;s=43226" alt="这里写图片描述"><br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6f1a7a410?w=1889&amp;h=327&amp;f=png&amp;s=33364" alt="这里写图片描述"><br>
-构建生命周期配置<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6f5b10abc?w=1884&amp;h=726&amp;f=png&amp;s=76468" alt="这里写图片描述"><br>
-这一步很关键，在Jenkins帮我们自动拉取代码并且打成jar包之后，我们需要执行shell指令去启动它们，<code>Pre Steps</code>和<code>Post Steps</code>使我们可以在整个周期内灵活的去控制流程~例如写个脚本启动它们！</p>
-<p>简单配置之后，点击保存，完成任务配置编辑！</p>
-<p>之后的事情就简单了，在首页可以看到一个任务列表，选中自己的任务点击进入<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6fa1e7b0f?w=1890&amp;h=567&amp;f=png&amp;s=67414" alt="这里写图片描述"><br>
-点击左侧工具栏的立即构建~<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b6fc49a77e?w=1891&amp;h=879&amp;f=png&amp;s=108676" alt="这里写图片描述"><br>
-Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
-<img src="https://user-gold-cdn.xitu.io/2018/11/6/166e77b7806857f7?w=1883&amp;h=907&amp;f=png&amp;s=90364" alt="这里写图片描述"></p>
-<p>看到最下方的成功就代表项目已经成功部署！</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2336,7 +2278,7 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2358,7 +2300,7 @@ Jenkins简单部署完成，看下我的任务构建控制台输出日志<br>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
