@@ -1022,6 +1022,197 @@ lable：分支</p>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/hello-world/" itemprop="url">使用Arthas监控Java进程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:41:00+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DevOps/" itemprop="url" rel="index">
+                    <span itemprop="name">DevOps</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一-arthas简介"><a class="header-anchor" href="#一-arthas简介">¶</a>一、Arthas简介</h2>
+<p><code>Arthas</code> 是Alibaba开源的Java诊断工具，深受开发者喜爱。</p>
+<p>当你遇到以下类似问题而束手无策时，<code>Arthas</code>可以帮助你解决：</p>
+<ol start="0">
+<li>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？</li>
+<li>我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？</li>
+<li>遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？</li>
+<li>线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！</li>
+<li>是否有一个全局视角来查看系统的运行状况？</li>
+<li>有什么办法可以监控到JVM的实时运行状态？</li>
+</ol>
+<p><code>Arthas</code>采用命令行交互模式，同时提供丰富的 <code>Tab</code> 自动补全功能，进一步方便进行问题的定位和诊断。</p>
+<p>使用说明可以看下官方的文档<a href="https://alibaba.github.io/arthas/" target="_blank" rel="noopener">https://alibaba.github.io/arthas/</a></p>
+<h2 id="二-安装及使用"><a class="header-anchor" href="#二-安装及使用">¶</a>二、安装及使用</h2>
+<p>以下通过CentOS系统举例来安装Arthas</p>
+<h4 id="1-安装java环境"><a class="header-anchor" href="#1-安装java环境">¶</a>1.安装Java环境</h4>
+<p>首先去Oracle下载JDK，可以通过<code>wget</code>或者<code>curl -O</code>来下载到Linux主机上。</p>
+<p>最方便的就是下载一个tar.gz格式的压缩包，然后通过<code>tar -zxf</code>解压，以下是笔者最终存放jdk的物理路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos jdk1.8.0_181]$ pwd</span><br><span class="line">/usr/lib/java-1.8.0/jdk1.8.0_181</span><br></pre></td></tr></table></figure>
+<p>接下来配置环境变量，通过<code>vim /etc/profile</code>进入编辑操作，并增加以下配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/lib/java-1.8.0/jdk1.8.0_181</span><br><span class="line">export JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">export CLASSPATH=$JAVA_HOME/lib/</span><br><span class="line">export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>退出并保存，通过执行<code>source /etc/profile</code>立即生效</p>
+<p>然后分别执行<code>java</code>和<code>javac</code>验证环境是否生效</p>
+<h4 id="2-安装arthas"><a class="header-anchor" href="#2-安装arthas">¶</a>2.安装Arthas</h4>
+<p>Arthas非常小巧，官方有一个可直接执行的sh脚本供我们使用，可以通过以下指令下载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://alibaba.github.io/arthas/install.sh | sh</span><br></pre></td></tr></table></figure>
+<p>启动Arthas</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./as.sh</span><br></pre></td></tr></table></figure>
+<h4 id="3-安装elasticsearch"><a class="header-anchor" href="#3-安装elasticsearch">¶</a>3.安装ElasticSearch</h4>
+<p>Arthas启动需要存在至少一个及以上的Java进程，这里我们为了方便测试，直接安装ElasticSearch。</p>
+<p>和安装JDK的方式类似，我们去官方下载一个<code>tar.gz</code>的压缩包，然后解压</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos elasticsearch]$ ll</span><br><span class="line">total 95612</span><br><span class="line">drwxr-xr-x 9 nico root     4096 Sep 19 09:03 elasticsearch-6.4.0</span><br><span class="line">-rw-r--r-- 1 nico root 97901357 Aug 23 23:21 elasticsearch-6.4.0.tar.gz</span><br></pre></td></tr></table></figure>
+<p>ElasticSearch的不允许<strong>root</strong>用户启动，所以笔者用的是<strong>nico</strong>账号，创建账号过程如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">adduser nico</span><br><span class="line">passwd nico</span><br><span class="line">#输入密码</span><br><span class="line">#将as.sh和elasticsearch的目录权限赋予nico账户</span><br><span class="line">chown nico as.sh</span><br><span class="line">chown -R nico elasticsearch</span><br><span class="line">su nico</span><br></pre></td></tr></table></figure>
+<p>以上指令请分开到对应的目录执行，执行完毕之后我们进入elasticsearch目录下的bin目录中，启动elasticsearch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch</span><br></pre></td></tr></table></figure>
+<h4 id="4-使用arthas监控elasticsearch"><a class="header-anchor" href="#4-使用arthas监控elasticsearch">¶</a>4.使用Arthas监控ElasticSearch</h4>
+<p>进入<code>as.sh</code>所在目录，启动Arthas</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./as.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos arthas]$ ./as.sh</span><br><span class="line">Arthas script version: 3.0.4</span><br><span class="line">Found existing java process, please choose one and hit RETURN.</span><br><span class="line">* [1]: 19670 org.elasticsearch.bootstrap.Elasticsearch</span><br></pre></td></tr></table></figure>
+<p>我们看到，当前只有ElasticSearch一个进程，输入1监控ElasticSearch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos arthas]$ ./as.sh</span><br><span class="line">Arthas script version: 3.0.4</span><br><span class="line">Found existing java process, please choose one and hit RETURN.</span><br><span class="line">* [1]: 19670 org.elasticsearch.bootstrap.Elasticsearch</span><br><span class="line">1</span><br><span class="line">Calculating attach execution time...</span><br><span class="line">Attaching to 19670 using version 3.0.4...</span><br><span class="line"></span><br><span class="line">real	0m0.227s</span><br><span class="line">user	0m0.177s</span><br><span class="line">sys	0m0.035s</span><br><span class="line">Attach success.</span><br><span class="line">Connecting to arthas server... current timestamp is 1537320967</span><br><span class="line">Trying 127.0.0.1...</span><br><span class="line">Connected to 127.0.0.1.</span><br><span class="line">Escape character is &apos;^]&apos;.</span><br><span class="line">  ,---.  ,------. ,--------.,--.  ,--.  ,---.   ,---.                           </span><br><span class="line"> /  O  \ |  .--. &apos;&apos;--.  .--&apos;|  &apos;--&apos;  | /  O  \ &apos;   .-&apos;                          </span><br><span class="line">|  .-.  ||  &apos;--&apos;.&apos;   |  |   |  .--.  ||  .-.  |`.  `-.                          </span><br><span class="line">|  | |  ||  |\  \    |  |   |  |  |  ||  | |  |.-&apos;    |                         </span><br><span class="line">`--&apos; `--&apos;`--&apos; &apos;--&apos;   `--&apos;   `--&apos;  `--&apos;`--&apos; `--&apos;`-----&apos;                          </span><br><span class="line">                                                                                </span><br><span class="line"></span><br><span class="line">wiki: https://alibaba.github.io/arthas</span><br><span class="line">version: 3.0.4</span><br><span class="line">pid: 19670</span><br><span class="line">timestamp: 1537320967728</span><br><span class="line"></span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>启动成功，Arthas提供一个shell的操作模式来供我们去监控Java进程，具体指令可以看下官方的<a href="https://alibaba.github.io/arthas/quick-start.html" target="_blank" rel="noopener">Wiki</a></p>
+<h4 id="5-安装过程可能遇到的问题"><a class="header-anchor" href="#5-安装过程可能遇到的问题">¶</a>5.安装过程可能遇到的问题</h4>
+<p>(1)遇到报错<code>java.security.AccessControlException: Access Denied</code></p>
+<p>官方解决办法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Add the permission in client.policy (for the application client), or in server.policy (for EJB/web modules) for the application that needs to set the property. By default, applications only have “read” permission for properties.</span><br><span class="line"></span><br><span class="line">For example, to grant read/write permission for all the files in the codebase directory, add or append the following to client.policy or server.policy:</span><br><span class="line"></span><br><span class="line">grant codeBase &quot;file:/.../build/sparc_SunOS/sec/-&quot; &#123;</span><br><span class="line">   permission java.util.PropertyPermission &quot;*&quot;, &quot;read,write&quot;;</span><br><span class="line"> &#125;;</span><br></pre></td></tr></table></figure>
+<p>java.policy所在的目录为JDK所在目录下的相对目录<code>jre/lib/security</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim java.policy</span><br></pre></td></tr></table></figure>
+<p>尾部增加一行即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permission java.security.AllPermission;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/Spring-Cloud-Gateway深入探究/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1204,197 +1395,6 @@ lable：分支</p>
 <a href="http://ju.outofmemory.cn/entry/346688" target="_blank" rel="noopener">Spring Cloud Gateway 入门</a><br>
 <a href="https://blog.csdn.net/qq_28089993/article/details/79443447" target="_blank" rel="noopener">响应式编程之Reactor的关于Flux和Mono概念</a></p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nico">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nico's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/06/hello-world/" itemprop="url">使用Arthas监控Java进程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T12:41:00+08:00">
-                2018-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DevOps/" itemprop="url" rel="index">
-                    <span itemprop="name">DevOps</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一-arthas简介"><a class="header-anchor" href="#一-arthas简介">¶</a>一、Arthas简介</h2>
-<p><code>Arthas</code> 是Alibaba开源的Java诊断工具，深受开发者喜爱。</p>
-<p>当你遇到以下类似问题而束手无策时，<code>Arthas</code>可以帮助你解决：</p>
-<ol start="0">
-<li>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？</li>
-<li>我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？</li>
-<li>遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？</li>
-<li>线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！</li>
-<li>是否有一个全局视角来查看系统的运行状况？</li>
-<li>有什么办法可以监控到JVM的实时运行状态？</li>
-</ol>
-<p><code>Arthas</code>采用命令行交互模式，同时提供丰富的 <code>Tab</code> 自动补全功能，进一步方便进行问题的定位和诊断。</p>
-<p>使用说明可以看下官方的文档<a href="https://alibaba.github.io/arthas/" target="_blank" rel="noopener">https://alibaba.github.io/arthas/</a></p>
-<h2 id="二-安装及使用"><a class="header-anchor" href="#二-安装及使用">¶</a>二、安装及使用</h2>
-<p>以下通过CentOS系统举例来安装Arthas</p>
-<h4 id="1-安装java环境"><a class="header-anchor" href="#1-安装java环境">¶</a>1.安装Java环境</h4>
-<p>首先去Oracle下载JDK，可以通过<code>wget</code>或者<code>curl -O</code>来下载到Linux主机上。</p>
-<p>最方便的就是下载一个tar.gz格式的压缩包，然后通过<code>tar -zxf</code>解压，以下是笔者最终存放jdk的物理路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos jdk1.8.0_181]$ pwd</span><br><span class="line">/usr/lib/java-1.8.0/jdk1.8.0_181</span><br></pre></td></tr></table></figure>
-<p>接下来配置环境变量，通过<code>vim /etc/profile</code>进入编辑操作，并增加以下配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/lib/java-1.8.0/jdk1.8.0_181</span><br><span class="line">export JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">export CLASSPATH=$JAVA_HOME/lib/</span><br><span class="line">export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
-<p>退出并保存，通过执行<code>source /etc/profile</code>立即生效</p>
-<p>然后分别执行<code>java</code>和<code>javac</code>验证环境是否生效</p>
-<h4 id="2-安装arthas"><a class="header-anchor" href="#2-安装arthas">¶</a>2.安装Arthas</h4>
-<p>Arthas非常小巧，官方有一个可直接执行的sh脚本供我们使用，可以通过以下指令下载</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://alibaba.github.io/arthas/install.sh | sh</span><br></pre></td></tr></table></figure>
-<p>启动Arthas</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./as.sh</span><br></pre></td></tr></table></figure>
-<h4 id="3-安装elasticsearch"><a class="header-anchor" href="#3-安装elasticsearch">¶</a>3.安装ElasticSearch</h4>
-<p>Arthas启动需要存在至少一个及以上的Java进程，这里我们为了方便测试，直接安装ElasticSearch。</p>
-<p>和安装JDK的方式类似，我们去官方下载一个<code>tar.gz</code>的压缩包，然后解压</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos elasticsearch]$ ll</span><br><span class="line">total 95612</span><br><span class="line">drwxr-xr-x 9 nico root     4096 Sep 19 09:03 elasticsearch-6.4.0</span><br><span class="line">-rw-r--r-- 1 nico root 97901357 Aug 23 23:21 elasticsearch-6.4.0.tar.gz</span><br></pre></td></tr></table></figure>
-<p>ElasticSearch的不允许<strong>root</strong>用户启动，所以笔者用的是<strong>nico</strong>账号，创建账号过程如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">adduser nico</span><br><span class="line">passwd nico</span><br><span class="line">#输入密码</span><br><span class="line">#将as.sh和elasticsearch的目录权限赋予nico账户</span><br><span class="line">chown nico as.sh</span><br><span class="line">chown -R nico elasticsearch</span><br><span class="line">su nico</span><br></pre></td></tr></table></figure>
-<p>以上指令请分开到对应的目录执行，执行完毕之后我们进入elasticsearch目录下的bin目录中，启动elasticsearch</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch</span><br></pre></td></tr></table></figure>
-<h4 id="4-使用arthas监控elasticsearch"><a class="header-anchor" href="#4-使用arthas监控elasticsearch">¶</a>4.使用Arthas监控ElasticSearch</h4>
-<p>进入<code>as.sh</code>所在目录，启动Arthas</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./as.sh</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos arthas]$ ./as.sh</span><br><span class="line">Arthas script version: 3.0.4</span><br><span class="line">Found existing java process, please choose one and hit RETURN.</span><br><span class="line">* [1]: 19670 org.elasticsearch.bootstrap.Elasticsearch</span><br></pre></td></tr></table></figure>
-<p>我们看到，当前只有ElasticSearch一个进程，输入1监控ElasticSearch</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[nico@VM_0_17_centos arthas]$ ./as.sh</span><br><span class="line">Arthas script version: 3.0.4</span><br><span class="line">Found existing java process, please choose one and hit RETURN.</span><br><span class="line">* [1]: 19670 org.elasticsearch.bootstrap.Elasticsearch</span><br><span class="line">1</span><br><span class="line">Calculating attach execution time...</span><br><span class="line">Attaching to 19670 using version 3.0.4...</span><br><span class="line"></span><br><span class="line">real	0m0.227s</span><br><span class="line">user	0m0.177s</span><br><span class="line">sys	0m0.035s</span><br><span class="line">Attach success.</span><br><span class="line">Connecting to arthas server... current timestamp is 1537320967</span><br><span class="line">Trying 127.0.0.1...</span><br><span class="line">Connected to 127.0.0.1.</span><br><span class="line">Escape character is &apos;^]&apos;.</span><br><span class="line">  ,---.  ,------. ,--------.,--.  ,--.  ,---.   ,---.                           </span><br><span class="line"> /  O  \ |  .--. &apos;&apos;--.  .--&apos;|  &apos;--&apos;  | /  O  \ &apos;   .-&apos;                          </span><br><span class="line">|  .-.  ||  &apos;--&apos;.&apos;   |  |   |  .--.  ||  .-.  |`.  `-.                          </span><br><span class="line">|  | |  ||  |\  \    |  |   |  |  |  ||  | |  |.-&apos;    |                         </span><br><span class="line">`--&apos; `--&apos;`--&apos; &apos;--&apos;   `--&apos;   `--&apos;  `--&apos;`--&apos; `--&apos;`-----&apos;                          </span><br><span class="line">                                                                                </span><br><span class="line"></span><br><span class="line">wiki: https://alibaba.github.io/arthas</span><br><span class="line">version: 3.0.4</span><br><span class="line">pid: 19670</span><br><span class="line">timestamp: 1537320967728</span><br><span class="line"></span><br><span class="line">$</span><br></pre></td></tr></table></figure>
-<p>启动成功，Arthas提供一个shell的操作模式来供我们去监控Java进程，具体指令可以看下官方的<a href="https://alibaba.github.io/arthas/quick-start.html" target="_blank" rel="noopener">Wiki</a></p>
-<h4 id="5-安装过程可能遇到的问题"><a class="header-anchor" href="#5-安装过程可能遇到的问题">¶</a>5.安装过程可能遇到的问题</h4>
-<p>(1)遇到报错<code>java.security.AccessControlException: Access Denied</code></p>
-<p>官方解决办法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Add the permission in client.policy (for the application client), or in server.policy (for EJB/web modules) for the application that needs to set the property. By default, applications only have “read” permission for properties.</span><br><span class="line"></span><br><span class="line">For example, to grant read/write permission for all the files in the codebase directory, add or append the following to client.policy or server.policy:</span><br><span class="line"></span><br><span class="line">grant codeBase &quot;file:/.../build/sparc_SunOS/sec/-&quot; &#123;</span><br><span class="line">   permission java.util.PropertyPermission &quot;*&quot;, &quot;read,write&quot;;</span><br><span class="line"> &#125;;</span><br></pre></td></tr></table></figure>
-<p>java.policy所在的目录为JDK所在目录下的相对目录<code>jre/lib/security</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim java.policy</span><br></pre></td></tr></table></figure>
-<p>尾部增加一行即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permission java.security.AllPermission;</span><br></pre></td></tr></table></figure>
           
         
       
