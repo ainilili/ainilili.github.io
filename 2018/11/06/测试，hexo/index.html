@@ -1,37 +1,818 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html>
 
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  
 
 
-{% block content %}
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="¶一、Mybatis的不足之处 Mybatis是一款优秀的及其灵活的持久层框架，通过XML配置并映射到Mapper接口为Service层提供基础数据操作入口。 这么优秀的框架竟然还有不足之处？ 俗话说人无完人，因为Mybatis实在是太灵活了，灵活到每个Mapper接口都需要定制对应的XML，所以就会引发一些问题。 ¶问题一：配置文件繁多 假如一个系统中DB中涉及100张表，我们就需要写100个M">
+<meta name="keywords" content="“博客,Java,Python,Node,开源,框架,并发,Mysql”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使Mybatis开发变得更加轻松的增强工具 — Ourbatis">
+<meta property="og:url" content="http://yoursite.com/2018/11/06/测试，hexo/index.html">
+<meta property="og:site_name" content="Nico&#39;s Blog">
+<meta property="og:description" content="¶一、Mybatis的不足之处 Mybatis是一款优秀的及其灵活的持久层框架，通过XML配置并映射到Mapper接口为Service层提供基础数据操作入口。 这么优秀的框架竟然还有不足之处？ 俗话说人无完人，因为Mybatis实在是太灵活了，灵活到每个Mapper接口都需要定制对应的XML，所以就会引发一些问题。 ¶问题一：配置文件繁多 假如一个系统中DB中涉及100张表，我们就需要写100个M">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/10/18/1668605ac4cc678d?w=540&h=816&f=png&s=22436">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/10/18/166865c063369ef6?w=741&h=270&f=png&s=10672">
+<meta property="og:updated_time" content="2021-03-21T17:43:04.893Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使Mybatis开发变得更加轻松的增强工具 — Ourbatis">
+<meta name="twitter:description" content="¶一、Mybatis的不足之处 Mybatis是一款优秀的及其灵活的持久层框架，通过XML配置并映射到Mapper接口为Service层提供基础数据操作入口。 这么优秀的框架竟然还有不足之处？ 俗话说人无完人，因为Mybatis实在是太灵活了，灵活到每个Mapper接口都需要定制对应的XML，所以就会引发一些问题。 ¶问题一：配置文件繁多 假如一个系统中DB中涉及100张表，我们就需要写100个M">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2018/10/18/1668605ac4cc678d?w=540&h=816&f=png&s=22436">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/06/测试，hexo/">
+
+
+
+
+
+  <title>使Mybatis开发变得更加轻松的增强工具 — Ourbatis | Nico's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Nico's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">兴趣使然的Coder</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
 
   <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/06/测试，hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使Mybatis开发变得更加轻松的增强工具 — Ourbatis</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T10:11:36+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一-mybatis的不足之处"><a class="header-anchor" href="#一-mybatis的不足之处">¶</a>一、Mybatis的不足之处</h2>
+<p>Mybatis是一款优秀的及其灵活的持久层框架，通过XML配置并映射到Mapper接口为Service层提供基础数据操作入口。</p>
+<p>这么优秀的框架竟然还有不足之处？</p>
+<p>俗话说人无完人，因为Mybatis实在是太灵活了，灵活到每个Mapper接口都需要定制对应的XML，所以就会引发一些问题。</p>
+<h3 id="问题一：配置文件繁多"><a class="header-anchor" href="#问题一：配置文件繁多">¶</a>问题一：配置文件繁多</h3>
+<p>假如一个系统中DB中涉及100张表，我们就需要写<code>100</code>个Mapper接口，还没完，最可怕的是，我们要为这<code>100</code>个Mapper接口定制与之对应的<code>100</code>套XML。而每个Mapper都必不可少的需要增删改查功能，我们就要写<code>100</code>遍增删改查，作为高贵的Java开发工程师，这是不能容忍的，于是<code>Mybatis Generator</code>诞生了，然而又会引发另一个问题！</p>
+<h3 id="问题二：维护困难"><a class="header-anchor" href="#问题二：维护困难">¶</a>问题二：维护困难</h3>
+<p>我们使用<code>Mybatis Generator</code>解决了问题一，再多的文件生成就是了，简单粗暴，貌似解决了所有的问题，Mybatis完美了！</p>
+<p>不要高兴的太早，在系统刚刚建立起来时，我们使用<code>Mybatis Generator</code>生成了一堆XML，在开发过程中，产品忽然提了一个新的需求，项目经理根据这个需求在某张表中增加或变动了一个字段，这时，我猜你的操作是这样：</p>
+<ul>
+<li>1、找到对应表的XML</li>
+<li>2、将该XML中自定义的一段标签复制出来，保存在本地</li>
+<li>3、使用<code>Mybatis Generator</code>重新生成该表的XML</li>
+<li>4、将之覆盖当前的XML</li>
+<li>5、将自定义的一段标签再粘贴进新的XML中</li>
+</ul>
+<p>在这个过程中，如果我们在第2步时漏复制了一段标签，等整个操作完成之后，又别是一番滋味在心头~</p>
+<h3 id="问题三：编写xml困难"><a class="header-anchor" href="#问题三：编写xml困难">¶</a>问题三：编写XML困难</h3>
+<p>假如肝不错，问题二也是小CASE，那么问题又来了，我们如何在繁长的XML中去编写和修改我们的XML呢。</p>
+<p>当我们打开要编辑的XML，映入眼帘的就是1000多行的XML，其中900行都是通用的增删改查操作，要新增一个标签，我们需要拉至文件底部编写新的数据操作，要更新一个标签，我们需要通过<code>Ctrl + F</code>寻找目标标签再进行修改。</p>
+<p>如何避免这些问题呢？</p>
+<p>如何让Mybatis增强通用性又不失灵活呢？</p>
+<h2 id="二-使用ourbatis辅助mybatis"><a class="header-anchor" href="#二-使用ourbatis辅助mybatis">¶</a>二、使用Ourbatis辅助Mybatis</h2>
+<p>Ourbatis是一款Mybatis开发增强工具，小巧简洁，项目地址：</p>
+<ul>
+<li>Github：<a href="https://github.com/ainilili/ourbatis" target="_blank" rel="noopener">https://github.com/ainilili/ourbatis</a></li>
+<li>Gitee：<a href="https://gitee.com/ainilili/ourbatis" target="_blank" rel="noopener">https://gitee.com/ainilili/ourbatis</a></li>
+<li>Wiki：<a href="https://github.com/ainilili/ourbatis/wiki" target="_blank" rel="noopener">https://github.com/ainilili/ourbatis/wiki</a></li>
+<li>Demo：<a href="https://github.com/ainilili/ourbatis-simple" target="_blank" rel="noopener">https://github.com/ainilili/ourbatis-simple</a></li>
+</ul>
+<p>特性：</p>
+<ul>
+<li><strong>1</strong>、简洁方便，可以让Mybatis无XML化开发。</li>
+<li><strong>2</strong>、优雅解耦，通用和自定义的SQL标签完全隔离，让维护更加轻松。</li>
+<li><strong>3</strong>、无侵入性，Mybatis和Ourbatis可同时使用，配置简洁。</li>
+<li><strong>4</strong>、灵活可控，通用模板可自定义及扩展。</li>
+<li><strong>5</strong>、部署快捷，只需要一个依赖，两个配置，即可直接运行。</li>
+<li><strong>6</strong>、多数据源，在多数据源环境下也可以照常使用。</li>
+</ul>
+<h3 id="关于ourbatis使用的一个小demo"><a class="header-anchor" href="#关于ourbatis使用的一个小demo">¶</a>关于Ourbatis使用的一个小Demo</h3>
+<p>环境：</p>
+<ul>
+<li>Spring Boot 2.0.5.RELEASE</li>
+<li>Ourbatis 1.0.5</li>
+<li>JAVA 8</li>
+<li>Mysql</li>
+</ul>
+<p>以<code>Spring Boot 2.0.5.RELEASE</code>版本为例，在可以正常使用Mybatis的项目中，<code>pom.xml</code>添加如下依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   &lt;dependency&gt;</span><br><span class="line">       	&lt;groupId&gt;com.smallnico&lt;/groupId&gt;</span><br><span class="line">       	&lt;artifactId&gt;ourbatis-spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">       	&lt;version&gt;1.0.5&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>在配置文件中增加一下配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ourbatis.domain-locations=实体类所在包名</span><br></pre></td></tr></table></figure>
+<p>接下来，Mapper接口只需要继承<code>SimpleMapper</code>即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import org.nico.ourbatis.domain.User;</span><br><span class="line">public interface UserMapper extends SimpleMapper&lt;User, Integer&gt;&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，一个使用Ourbatis的简单应用已经部署起来了，之后，你就可以使用一些Ourbatis默认的通用操作方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public T selectById(K key);</span><br><span class="line"></span><br><span class="line">public T selectEntity(T condition);</span><br><span class="line"></span><br><span class="line">public List&lt;T&gt; selectList(T condition);</span><br><span class="line"></span><br><span class="line">public long selectCount(Object condition);</span><br><span class="line"></span><br><span class="line">public List&lt;T&gt; selectPage(Page&lt;Object&gt; page);</span><br><span class="line"></span><br><span class="line">default PageResult&lt;T&gt; selectPageResult(Page&lt;Object&gt; page)&#123;</span><br><span class="line">	long total = selectCount(page.getEntity());</span><br><span class="line">	List&lt;T&gt; results = null;</span><br><span class="line">	if(total &gt; 0) &#123;</span><br><span class="line">		results = selectPage(page);</span><br><span class="line">	&#125;</span><br><span class="line">	return new PageResult&lt;&gt;(total, results);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public K selectId(T condition);</span><br><span class="line"></span><br><span class="line">public List&lt;K&gt; selectIds(T condition);</span><br><span class="line"></span><br><span class="line">public int insert(T entity);</span><br><span class="line"></span><br><span class="line">public int insertSelective(T entity);</span><br><span class="line"></span><br><span class="line">public int insertBatch(List&lt;T&gt; list);</span><br><span class="line"></span><br><span class="line">public int update(T entity);</span><br><span class="line"></span><br><span class="line">public int updateSelective(T entity);</span><br><span class="line"></span><br><span class="line">public int updateBatch(List&lt;T&gt; list);</span><br><span class="line"></span><br><span class="line">public int delete(T condition);</span><br><span class="line"></span><br><span class="line">public int deleteById(K key);</span><br><span class="line"></span><br><span class="line">public int deleteBatch(List&lt;K&gt; list);</span><br></pre></td></tr></table></figure>
+<h3 id="mapper自定义方法"><a class="header-anchor" href="#mapper自定义方法">¶</a>Mapper自定义方法</h3>
+<p>在很多场景中，我们使用以上的自带的通用方法远远不能满足我们的需求，我们往往需要额外扩展新的Mapper方法、XML标签，我们使用了Ourbatis之后该如何实现呢？</p>
+<p>首先看一下我们的需求，在上述Demo中，我们在UserMapper中增加一个方法<code>selectNameById</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import org.nico.ourbatis.domain.User;</span><br><span class="line">public interface UserMapper extends SimpleMapper&lt;User, Integer&gt;&#123;</span><br><span class="line">    public String selectNameById(Integer userId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>和Mybatis一样，需要在<code>resources</code>资源目录下新建一个文件夹<code>ourbatis-mappers</code>，然后在其中新建一个XML文件，命名规则为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DomainClassSimpleName + Mapper.xml</span><br></pre></td></tr></table></figure>
+<p>其中<code>DomainClassSimpleName</code>就是我们实体类的类名，这里是为<code>User</code>，那么新建的XML名为<code>UserMapper.xml</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">src/main/resources</span><br><span class="line"> - ourbatis-mappers</span><br><span class="line">   - UserMapper.xml</span><br></pre></td></tr></table></figure>
+<p>之后，打开<code>UserMapper.xml</code>，开始编写Mapper中<code>selectNameById</code>方法对应的标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;selectNameById&quot; resultType=&quot;java.lang.String&quot;&gt;</span><br><span class="line">    select name from user where id = #&#123;userId&#125;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+<p>注意，整个文件中只需要写标签就行了，其他的什么都不需要，这是为什么呢？深入之后你就会明白，这里先不多说！</p>
+<p>接下来，就没有接下来了，可以直接使用<code>selectNameById</code>方法了。</p>
+<h3 id="深入了解ourbatis"><a class="header-anchor" href="#深入了解ourbatis">¶</a>深入了解Ourbatis</h3>
+<p><img src="https://user-gold-cdn.xitu.io/2018/10/18/1668605ac4cc678d?w=540&amp;h=816&amp;f=png&amp;s=22436" alt="ourbatis 流程图"></p>
+<p>当服务启动的时候，Ourbatis首先会扫描<code>ourbatis.domain-locations</code>配置包下的所有实体类，将之映射为与之对应的表结构数据：<br>
+<img src="https://user-gold-cdn.xitu.io/2018/10/18/166865c063369ef6?w=741&amp;h=270&amp;f=png&amp;s=10672" alt="ourbatis Mapping"></p>
+<p>然后通过<code>ourbatis.xml</code>的渲染，生成一个又一个的XML文件，最后将之重新Build到Mybatis容器中！</p>
+<p>整个过程分为两个核心点：</p>
+<ul>
+<li>1、映射实体类为元数据</li>
+<li>2、使用<code>ourbatis.xml</code>渲染元数据为XML文件</li>
+</ul>
+<p>我会一一介绍之~</p>
+<h4 id="映射实体类为元数据"><a class="header-anchor" href="#映射实体类为元数据">¶</a>映射实体类为元数据</h4>
+<p>在映射时，我们要根据自己数据库字段命名的风格去调整映射规则，就需要在第1个核心点中去做处理，Ourbatis使用包装器来完成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Wrapper&lt;T&gt; &#123;</span><br><span class="line">	public String wrapping(T value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于需要映射的字段，如<strong>表名</strong>和<strong>表字段名</strong>，它们都将会经过一个包装器链条的处理之后再投入到<code>ourbatis.xml</code>中做渲染，这样就使得我们可以自定义包装器出更换映射的字段格式，具体方式可以参考官方Wiki：<a href="https://github.com/ainilili/ourbatis/wiki/Wrapper%E5%8C%85%E8%A3%85%E5%99%A8" target="_blank" rel="noopener">Wrapper包装器</a></p>
+<h4 id="使用ourbatis-xml渲染元数据为xml文件"><a class="header-anchor" href="#使用ourbatis-xml渲染元数据为xml文件">¶</a>使用<code>ourbatis.xml</code>渲染元数据为XML文件</h4>
+<p>而在于第2个核心点中，Ourbatis通过自定义标签做模板渲染，我们可以先看一下官方默认的<code>ourbatis.xml</code>内部构造：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;</span><br><span class="line">&lt;mapper namespace=&quot;@&#123;mapperClassName&#125;&quot;&gt;</span><br><span class="line">	&lt;resultMap id=&quot;BaseResultMap&quot; type=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;id column=&quot;@&#123;elem.jdbcName&#125;&quot; property=&quot;@&#123;elem.javaName&#125;&quot; /&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;result column=&quot;@&#123;elem.jdbcName&#125;&quot; property=&quot;@&#123;elem.javaName&#125;&quot; /&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/resultMap&gt;</span><br><span class="line"></span><br><span class="line">	&lt;sql id=&quot;Base_Column_List&quot;&gt;</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;</span><br><span class="line">			split=&quot;,&quot;&gt;</span><br><span class="line">			`@&#123;elem.jdbcName&#125;`</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/sql&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectById&quot; parameterType=&quot;java.lang.Object&quot;</span><br><span class="line">		resultMap=&quot;BaseResultMap&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectEntity&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;</span><br><span class="line">		resultMap=&quot;BaseResultMap&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		limit 1</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectCount&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;</span><br><span class="line">		resultType=&quot;long&quot;&gt;</span><br><span class="line">		select count(0)</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		limit 1</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectPage&quot;</span><br><span class="line">		parameterType=&quot;org.nico.ourbatis.entity.Page&quot;</span><br><span class="line">		resultMap=&quot;BaseResultMap&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;if test=&quot;entity != null&quot;&gt;</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">				&lt;if test=&quot;entity.@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">					and `@&#123;elem.jdbcName&#125;` = #&#123;entity.@&#123;elem.javaName&#125;&#125;</span><br><span class="line">				&lt;/if&gt;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;/if&gt;</span><br><span class="line">		&lt;if test=&quot;orderBy != null&quot;&gt;</span><br><span class="line">			order by $&#123;orderBy&#125;</span><br><span class="line">		&lt;/if&gt;</span><br><span class="line">		&lt;if test=&quot;start != null and end != null&quot;&gt;</span><br><span class="line">			limit $&#123;start&#125;,$&#123;end&#125;</span><br><span class="line">		&lt;/if&gt;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectList&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;</span><br><span class="line">		resultMap=&quot;BaseResultMap&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectId&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;</span><br><span class="line">		resultType=&quot;java.lang.Object&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;</span><br><span class="line">			split=&quot;,&quot;&gt;</span><br><span class="line">			`@&#123;elem.jdbcName&#125;`</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		limit 1</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;select id=&quot;selectIds&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;</span><br><span class="line">		resultType=&quot;java.lang.Object&quot;&gt;</span><br><span class="line">		select</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;</span><br><span class="line">			split=&quot;,&quot;&gt;</span><br><span class="line">			`@&#123;elem.jdbcName&#125;`</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line"></span><br><span class="line">	&lt;delete id=&quot;deleteById&quot; parameterType=&quot;java.lang.Object&quot;&gt;</span><br><span class="line">		delete</span><br><span class="line">		from @&#123;tableName&#125;</span><br><span class="line">		where 1=1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/delete&gt;</span><br><span class="line"></span><br><span class="line">	&lt;insert id=&quot;insert&quot; keyProperty=&quot;@&#123;primaryColumns.0.jdbcName&#125;&quot;</span><br><span class="line">		useGeneratedKeys=&quot;true&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		insert into @&#123;tableName&#125;</span><br><span class="line">		(</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		)</span><br><span class="line">		values (</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;</span><br><span class="line">			split=&quot;,&quot;&gt;</span><br><span class="line">			#&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		)</span><br><span class="line">	&lt;/insert&gt;</span><br><span class="line"></span><br><span class="line">	&lt;insert id=&quot;insertSelective&quot;</span><br><span class="line">		keyProperty=&quot;@&#123;primaryColumns.0.jdbcName&#125;&quot; useGeneratedKeys=&quot;true&quot;</span><br><span class="line">		parameterType=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		insert into @&#123;tableName&#125;</span><br><span class="line">		(</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;</span><br><span class="line">			split=&quot;,&quot;&gt;</span><br><span class="line">			`@&#123;elem.jdbcName&#125;`</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				,`@&#123;elem.jdbcName&#125;`</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		)</span><br><span class="line">		values (</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			#&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				, #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">		)</span><br><span class="line">	&lt;/insert&gt;</span><br><span class="line"></span><br><span class="line">	&lt;insert id=&quot;insertBatch&quot;</span><br><span class="line">		keyProperty=&quot;@&#123;primaryColumns.0.jdbcName&#125;&quot; useGeneratedKeys=&quot;true&quot;</span><br><span class="line">		parameterType=&quot;java.util.List&quot;&gt;</span><br><span class="line">		insert into @&#123;tableName&#125;</span><br><span class="line">		(</span><br><span class="line">		&lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">		)</span><br><span class="line">		values</span><br><span class="line">		&lt;foreach collection=&quot;list&quot; index=&quot;index&quot; item=&quot;item&quot;</span><br><span class="line">			separator=&quot;,&quot;&gt;</span><br><span class="line">			(</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;</span><br><span class="line">				split=&quot;,&quot;&gt;</span><br><span class="line">				#&#123;item.@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">			)</span><br><span class="line">		&lt;/foreach&gt;</span><br><span class="line">	&lt;/insert&gt;</span><br><span class="line"></span><br><span class="line">	&lt;update id=&quot;update&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		update @&#123;tableName&#125;</span><br><span class="line">		&lt;set&gt;</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;</span><br><span class="line">				split=&quot;,&quot;&gt;</span><br><span class="line">				`@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;/set&gt;</span><br><span class="line">		where 1=1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/update&gt;</span><br><span class="line"></span><br><span class="line">	&lt;update id=&quot;updateSelective&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		update @&#123;tableName&#125;</span><br><span class="line">		&lt;set&gt;</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;</span><br><span class="line">				split=&quot;,&quot;&gt;</span><br><span class="line">				`@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">				&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">					,`@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">				&lt;/if&gt;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;/set&gt;</span><br><span class="line">		where 1=1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/update&gt;</span><br><span class="line"></span><br><span class="line">	&lt;update id=&quot;updateBatch&quot; parameterType=&quot;java.util.List&quot;&gt;</span><br><span class="line">		&lt;foreach collection=&quot;list&quot; index=&quot;index&quot; item=&quot;item&quot;</span><br><span class="line">			separator=&quot;;&quot;&gt;</span><br><span class="line">			update @&#123;tableName&#125;</span><br><span class="line">			&lt;set&gt;</span><br><span class="line">				&lt;ourbatis:foreach list=&quot;normalColumns&quot; var=&quot;elem&quot;</span><br><span class="line">					split=&quot;,&quot;&gt;</span><br><span class="line">					`@&#123;elem.jdbcName&#125;` = #&#123;item.@&#123;elem.javaName&#125;&#125;</span><br><span class="line">				&lt;/ourbatis:foreach&gt;</span><br><span class="line">			&lt;/set&gt;</span><br><span class="line">			where 1=1</span><br><span class="line">			&lt;ourbatis:foreach list=&quot;primaryColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;item.@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/ourbatis:foreach&gt;</span><br><span class="line">		&lt;/foreach&gt;</span><br><span class="line">	&lt;/update&gt;</span><br><span class="line"></span><br><span class="line">	&lt;delete id=&quot;deleteBatch&quot; parameterType=&quot;java.util.List&quot;&gt;</span><br><span class="line">		delete from @&#123;tableName&#125; where @&#123;primaryColumns.0.jdbcName&#125; in</span><br><span class="line">		&lt;foreach close=&quot;)&quot; collection=&quot;list&quot; index=&quot;index&quot; item=&quot;item&quot;</span><br><span class="line">			open=&quot;(&quot; separator=&quot;,&quot;&gt;</span><br><span class="line">			#&#123;item&#125;</span><br><span class="line">		&lt;/foreach&gt;</span><br><span class="line">	&lt;/delete&gt;</span><br><span class="line"></span><br><span class="line">	&lt;delete id=&quot;delete&quot; parameterType=&quot;@&#123;domainClassName&#125;&quot;&gt;</span><br><span class="line">		delete from @&#123;tableName&#125; where 1 = 1</span><br><span class="line">		&lt;ourbatis:foreach list=&quot;allColumns&quot; var=&quot;elem&quot;&gt;</span><br><span class="line">			&lt;if test=&quot;@&#123;elem.javaName&#125; != null&quot;&gt;</span><br><span class="line">				and `@&#123;elem.jdbcName&#125;` = #&#123;@&#123;elem.javaName&#125;&#125;</span><br><span class="line">			&lt;/if&gt;</span><br><span class="line">		&lt;/ourbatis:foreach&gt;</span><br><span class="line">	&lt;/delete&gt;</span><br><span class="line"></span><br><span class="line">	&lt;ourbatis:ref path=&quot;classpath:ourbatis-mappers/@&#123;domainSimpleClassName&#125;Mapper.xml&quot; /&gt;</span><br><span class="line">&lt;/mapper&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看出来，<code>ourbatis.xml</code>内容类似于原生的Mybatis的XML，不同的是，有两个陌生的标签：</p>
+<ul>
+<li>ourbatis:foreach 对元数据中的列表进行循环渲染</li>
+<li>ourbatis:ref 引入外界文件内容</li>
+</ul>
+<p>这是Ourbatis中独有的标签，Ourbatis也提供着对应的入口让我们去自定义标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class: org.nico.ourbatis.Ourbatis</span><br><span class="line">Field: </span><br><span class="line">public static final Map&lt;String, AssistAdapter&gt; ASSIST_ADAPTERS = new HashMap&lt;String, AssistAdapter&gt;()&#123;</span><br><span class="line">		private static final long serialVersionUID = 1L;</span><br><span class="line">		&#123;</span><br><span class="line">			put(&quot;ourbatis:foreach&quot;, new ForeachAdapter());</span><br><span class="line">			put(&quot;ourbatis:ref&quot;, new RefAdapter());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们可以修改<code>org.nico.ourbatis.Ourbatis</code>类中的静态参数<code>ASSIST_ADAPTERS</code>去删除、更新和添加自定义标签，需要实现一个标签适配器，我们可以看一下最简单的<code>RefAdapter</code>适配器的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class RefAdapter extends AssistAdapter&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public String adapter(Map&lt;String, Object&gt; datas, NoelRender render, Document document) &#123;</span><br><span class="line">		String path = render.rending(datas, document.getParameter(&quot;path&quot;), &quot;domainSimpleClassName&quot;);</span><br><span class="line">		String result =  StreamUtils.convertToString(path.replaceAll(&quot;classpath:&quot;, &quot;&quot;));</span><br><span class="line">		return result == null ? &quot;&quot; : result.trim();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Ourbatis中只定义了上述两个自定义标签已足够满足需求，通过<code>foreach</code>标签，将元数据中的集合遍历渲染，通过<code>ref</code>标签引入外界资源，也就是我们之前所说的对Mapper接口中方法的扩展！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;ourbatis:ref path=&quot;classpath:ourbatis-mappers/@&#123;domainSimpleClassName&#125;Mapper.xml&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>其中的path就是当前项目classpath路径的相对路径，而<code>@{domainSimpleClassName}</code>就代表着实体类的类名，更多的系统参数可以参考Wiki：<a href="https://github.com/ainilili/ourbatis/wiki/%E5%85%83%E6%95%B0%E6%8D%AE%E6%98%A0%E5%B0%84" target="_blank" rel="noopener">元数据映射</a></p>
+<p>通过这种模板渲染的机制，Ourbatis是相当灵活的，我们不仅可以通过引入外部文件进行扩展，当我们需要添加或修改通用方法时，我们可以可以自定义<code>ourbatis.xml</code>的内容，如何做到呢？复制一份将之放在资源目录下就可以了！</p>
+<p>看到这里，相信大家已经知道Ourbatis的基本原理已经使用方式，我就再次不多说了，更多细节可以去官方Wiki中阅读：<a href="https://github.com/ainilili/ourbatis/wiki/%E5%85%83%E6%95%B0%E6%8D%AE%E6%98%A0%E5%B0%84" target="_blank" rel="noopener">Ourbatis Wiki</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/06/hello-world/" rel="prev" title="使用Arthas监控Java进程">
+                使用Arthas监控Java进程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
 
     <div class="post-spread">
-      {% if theme.jiathis %}
-        {% include '_partials/share/jiathis.swig' %}
-      {% elseif theme.baidushare %}
-        {% include '_partials/share/baidushare.swig' %}
-      {% elseif theme.add_this_id %}
-        {% include '_partials/share/add-this.swig' %}
-      {% elseif theme.duoshuo_shortname and theme.duoshuo_share %}
-        {% include '_partials/share/duoshuo_share.swig' %}
-      {% endif %}
+      
     </div>
   </div>
 
-{% endblock %}
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+          </div>
+          
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4" alt="Nico">
+            
+              <p class="site-author-name" itemprop="name">Nico</p>
+              <p class="site-description motion-element" itemprop="description">我是Nico，梦想是做一名兴趣使然的码农，于是我一步步变强，后来我成为了光头</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ainilili" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://note.isnico.com/" title="Nico's笔记" target="_blank">Nico's笔记</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.abby.md/" title="Abby's博客" target="_blank">Abby's博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ilovey.live/" title="低调小熊猫" target="_blank">低调小熊猫</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://zhangsan.plus/" title="ZhangSan_Plus'博客" target="_blank">ZhangSan_Plus'博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-mybatis的不足之处"><span class="nav-number">1.</span> <span class="nav-text">¶一、Mybatis的不足之处</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一：配置文件繁多"><span class="nav-number">1.1.</span> <span class="nav-text">¶问题一：配置文件繁多</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二：维护困难"><span class="nav-number">1.2.</span> <span class="nav-text">¶问题二：维护困难</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题三：编写xml困难"><span class="nav-number">1.3.</span> <span class="nav-text">¶问题三：编写XML困难</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二-使用ourbatis辅助mybatis"><span class="nav-number">2.</span> <span class="nav-text">¶二、使用Ourbatis辅助Mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于ourbatis使用的一个小demo"><span class="nav-number">2.1.</span> <span class="nav-text">¶关于Ourbatis使用的一个小Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mapper自定义方法"><span class="nav-number">2.2.</span> <span class="nav-text">¶Mapper自定义方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深入了解ourbatis"><span class="nav-number">2.3.</span> <span class="nav-text">¶深入了解Ourbatis</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#映射实体类为元数据"><span class="nav-number">2.3.1.</span> <span class="nav-text">¶映射实体类为元数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用ourbatis-xml渲染元数据为xml文件"><span class="nav-number">2.3.2.</span> <span class="nav-text">¶使用ourbatis.xml渲染元数据为XML文件</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小Nico</span>
+
+  
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

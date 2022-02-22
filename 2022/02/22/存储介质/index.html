@@ -1,37 +1,796 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html>
 
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  
 
 
-{% block content %}
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 开发一个简单的应用，我们只需要掌握mysql的增删改查即可，这看起来是一件非常easy的事情，而事实确实如此，但是前提是我们的目标是冲着简单去的。再将小目标强化一下，我们想开发复杂一些的应用，这不得不需要我们进一步加强对mysql的了解，例如索引等调优技术，随着目标的不断加强，我们需要对于整个应用所涉及到的技术拥有更加透彻的认知。 从此刻开始，让我们将思想坠入硬件层，深入但是又不太深入的了解">
+<meta name="keywords" content="“博客,Java,Python,Node,开源,框架,并发,Mysql”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="存储介质">
+<meta property="og:url" content="http://yoursite.com/2022/02/22/存储介质/index.html">
+<meta property="og:site_name" content="Nico&#39;s Blog">
+<meta property="og:description" content="前言 开发一个简单的应用，我们只需要掌握mysql的增删改查即可，这看起来是一件非常easy的事情，而事实确实如此，但是前提是我们的目标是冲着简单去的。再将小目标强化一下，我们想开发复杂一些的应用，这不得不需要我们进一步加强对mysql的了解，例如索引等调优技术，随着目标的不断加强，我们需要对于整个应用所涉及到的技术拥有更加透彻的认知。 从此刻开始，让我们将思想坠入硬件层，深入但是又不太深入的了解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/67913aad349540bfbaae1ab58a649c7a~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d4ca819063c047529599f8958f6cbed0~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dedc7f6ccda43428c4763c5b0098419~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c002802552734bfab4fb42208750e422~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/63d4e91f879041938bb56721cdc4f48f~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7391f8e215614baaa179d807a5fe54d9~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b9985ac6c0d4d459525505abb063351~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c703ce31bb24125a53f18d073e589f2~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/586e960c3da540d8ab264b4742359a3a~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa35b26e384043ee9182d7d89be8e857~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7751428f19184c5b8e799a16b016c193~tplv-k3u1fbpfcp-watermark.image?">
+<meta property="og:updated_time" content="2022-02-22T04:36:05.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="存储介质">
+<meta name="twitter:description" content="前言 开发一个简单的应用，我们只需要掌握mysql的增删改查即可，这看起来是一件非常easy的事情，而事实确实如此，但是前提是我们的目标是冲着简单去的。再将小目标强化一下，我们想开发复杂一些的应用，这不得不需要我们进一步加强对mysql的了解，例如索引等调优技术，随着目标的不断加强，我们需要对于整个应用所涉及到的技术拥有更加透彻的认知。 从此刻开始，让我们将思想坠入硬件层，深入但是又不太深入的了解">
+<meta name="twitter:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/67913aad349540bfbaae1ab58a649c7a~tplv-k3u1fbpfcp-watermark.image?">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/02/22/存储介质/">
+
+
+
+
+
+  <title>存储介质 | Nico's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Nico's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">兴趣使然的Coder</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
 
   <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/02/22/存储介质/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nico">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nico's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">存储介质</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-02-22T12:35:00+08:00">
+                2022-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1><strong>前言</strong></h1>
+<p>开发一个简单的应用，我们只需要掌握mysql的增删改查即可，这看起来是一件非常easy的事情，而事实确实如此，但是前提是我们的目标是冲着<strong>简单</strong>去的。再将小目标强化一下，我们想开发复杂一些的应用，这不得不需要我们进一步加强对mysql的了解，例如索引等调优技术，随着目标的不断加强，我们需要对于整个应用所涉及到的技术拥有更加透彻的认知。</p>
+<p>从此刻开始，让我们将思想坠入硬件层，深入但是又不太深入的了解一下各种存储介质的存储原理。</p>
+<h1><strong>HDD</strong></h1>
+<p>机械硬盘HDD（Hard Disk Drive）是一款磁物质存储类型的硬盘，它通过磁头转轴带动磁头在磁盘上运动来达到存储的目的，在此过程中，磁头不会与磁盘接触，电机控制磁头的电磁流来影响磁盘上磁极发生正负变化，从而做到存储二进制数据。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/67913aad349540bfbaae1ab58a649c7a~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>HDD的大体结构也并不算复杂。从平面来看，它主要由磁头、盘片、电机、磁头、转轴等组成。从侧面来看，HDD不止一个盘片，每个盘片都有正反两个盘面，每个盘面都配有一个磁头。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d4ca819063c047529599f8958f6cbed0~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>HDD在逻辑上又划分为磁道、柱面、扇区。每个盘面上被划分成许多同心圆，每个同心圆的圆周被称为磁道，离转轴最远（最外圈）的磁道为0号磁道，读写将会从0号磁道开始向内圈移动。多个盘面垂直方向同轴磁道组成了柱面。同时，每个盘面又被切分成多个扇形区域，每个扇形区域被称为扇区。扇区是机械硬盘的基本读写单位，每个扇区容量为512Byte，扇面外圈的扇区虽然比内圈看着要大一些，实则磁物质密度会比内圈低很多，最终容量并不会因此而改变。</p>
+<p>值得一提的是，因为磁头切换磁道需要臂杆做机械运动，所以效率很低，而切换柱面只需要电控磁头，所以所有磁头同一时刻都是同轴的，读写过程也并不是按照盘面来写，而是先写磁道，磁道满了以后向下写入同一柱面的其它磁道，当整个柱面都写满以后再切换到下一个柱面。由于所有盘片都固定在转轴上，而磁头也只能验证盘片半径方向运动，所以多盘机械硬盘面多多个读写指令，也只能串行处理。</p>
+<p>当需要做数据读写时，首先拿到要读数据的盘面号、扇区号和磁头号，然后转轴带动盘片到对应的扇区，机械臂带动对应的磁头移动到对应的柱面，读写完毕之后再进行下一个读写指令的处理。</p>
+<h1><strong>DRAM</strong></h1>
+<p>动态随机存储器DRAM（Dynamic Random Access Memory）又简称为内存，相比ROM（Read-Only Memory）的非易失性，DRAM的数据会随着断电而消失，因此，DRAM一般被用于临时存储，而非持久化场景。另外，因为电容存在漏电现象，长时间的断电会导致电荷流失以至于数据失真，所以DRAM会周期性的刷新充电，这也是“动态”的由来。</p>
+<p>DRAM的存储的原理是通过电容来存储电荷，通过电荷量来表示二进制中的0和1。</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7dedc7f6ccda43428c4763c5b0098419~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>上图为DRAM存储电路逻辑图，整个数字电路做的事情只是为了存储1bit的数据，其中电容（Capacitor）用来存储电荷，晶体管（Transistor）用来控制外部对电容的访问，Worldline为字线（行），Bitline为数据线（列），整个电路组成了DRAM存储的最小单元cell，实际应用中，无数个cell以矩阵的形式排列，这种矩阵被称为bank，一个bank中的cell通过行地址和列地址进行唯一标识。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c002802552734bfab4fb42208750e422~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>在数据读写之前，需要先对目标cell进行寻址。首先通过行地址解码器定位到行地址线路并发出行地址选通脉冲RAS（Row Address Strobe）信号，因为Capacitor相比Bitline上的电容值相差太大，当从Capacitor上读取数据时对于Bitline上电压影响非常小，导致无法有效识别具体数据，所以在RAS信号激活后，需要使用读出放大器（Sense Amplifier）将电容充放电信号放大，这个过程称为Activate。</p>
+<p>当RAS信号被激活后，通过列地址解码器定位到列地址线路并发出列地址选通脉冲CAS（Column Address Strobe）信号，之后放开Transistor，通过改变外部电压状态来感应或改变Capacitor中的电荷以完成数据读写，这个过程称为Precharge。</p>
+<p>在读取过程中，因为Capacitor与Bitline上的电压差，这样会使Capacitor上的电容量发生变化，导致下次读取失真，为了保证每次读取到的数据都是准确的，在读取完毕后需要再次充电操作。</p>
+<p>为了更好的描述性能，引入了描述内存性能的四个时序参数：CL、TRCD、TRP和TRAS，单位为时钟周期（ns级），每个参数周期如下：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/63d4e91f879041938bb56721cdc4f48f~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>因为DRAM定时充电刷新的特性，性能会受到一定的影响，而静态随机存储器SRAM（Static Random Access Memory）弥补了这个缺陷，它不需要定时刷新，只要存储器保持通电，数据就可以持久保存，当然断电后仍然会丢失。SRAM之所以能做到这一点，是因为它去掉了电容，通过两个耦合的反相器的来锁住输出状态，有兴趣可以私下深究。</p>
+<h1><strong>SSD</strong></h1>
+<p>固态硬盘SSD（Solid State Disk或Solid State Drive）是基于半导体闪存（NAND Flash）作为存储介质的硬盘，相比传统的机械硬盘，它去掉了机械固件，引入了主控芯片来代替机械操作，这意味着它的性能、功耗及可靠性会比HDD高出一大截。</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7391f8e215614baaa179d807a5fe54d9~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>Flash闪存是一种非易失性的内存，这意味着即使断电也不会丢失数据，使用双层浮栅（Floating Gate）MOS管作为存储单元cell，与DRAM 1T1C（一个Transistor + 一个Capacitor）存储方式不同的是，浮栅晶体管上下被绝缘层包围，可以将电子锁在其中，避免数据因掉电而消失。</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b9985ac6c0d4d459525505abb063351~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>SSD目前的存储单元根据存储量的大小分为SLC（Single Level Cell）、MLC（Multiple Level Cell）和TLC（Triple Level Cell），就像名称所蕴含的意思一样，SLC可存储1bit数据，MLC可存储2bit数据，TLC可存储3bit数据。SLC是最简单的，其内部状态只有0和1，而MLC要同时存在2bit数据，其内部状态数量增加到了 2^2 个 ，分别为是00/01/10/11，同理，TLC也可以推出它的内部状态数量为 2^3 个，分别为000/001/010/011/100/101/110/111，可以发现，随着存储量的增加，存储单元内部的状态呈指数倍上升，要识别出具体的状态，就要将电子个数进行更细致的划分，这也就意味着读写时的控制更加精细，如果抛开存储数据量的差异，单纯在性能上作比较的话，SLC是最强的，其次是MLC。</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c703ce31bb24125a53f18d073e589f2~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>与DRAM类型，SSD结构上同样分层，主控通过多个通道Channel操作多块Flash闪存颗粒DIE（硅晶片，也被称为逻辑单元LUN），一个DIE由多个Plane组成，一个Plane由多个Block组成，每个Block下包含若干个Page。其中Block是擦除的最小单位，Page是最小的读写单位。每个Plane都有独立的Cache Register和Page Register，大小与Page一样，目的是做主控和存储介质之前的缓冲区。</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/586e960c3da540d8ab264b4742359a3a~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>Page大小一般为4KB的整数倍，作为闪存读写最小单位，哪怕读写1byte数据，也要访问整个Page。同时，Page不允许覆盖写，举个例子，先写入1byte数据到Page1，再写入1byte数据时不会因为Page1未满就追加进去，而是先读出Page1中之前的1byte数据并与新数据合并后写入Page2，之后将Page1标记为stale，等待被GC。</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa35b26e384043ee9182d7d89be8e857~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>因为闪存不能覆盖写，想要在老地方写数据，只能先擦除，这个过程会对闪存块造成一定的磨损，当闪存块的寿命结束，将会成为坏块，另外闪存块读的次数太多也会导致上面数据失真，所以SSD中的闪存转换层FTL（Flash Translation Layer）至关重要。它通过来维护一张映射表（Map Table）来完成用户逻辑地址到闪存物理地址的转换，另外为了避免上述一系列问题，FTL还做了很多“份外”之事，包括但不仅限于：</p>
+<ul>
+<li>垃圾回收（Garbage Collection）：当闪存写入达到阈值时，触发GC回收，腾出更多的写入空间。</li>
+<li>磨损平衡（Ware Leveling）：为了延长Block寿命，要避免对某些Block高频读写，保证所有块的均衡写入。</li>
+<li>消除读干扰（Read Disturb）：当闪存块读取达到阈值时，FTL将这些数据迁移至其它块。</li>
+</ul>
+<h3 id="映射管理"><a class="header-anchor" href="#映射管理">¶</a><strong>映射管理</strong></h3>
+<p>用户逻辑地址到闪存物理地址的转换是FTL本职工作，FTL在内部维护了一张映射表，其中维护了用户逻辑空间到闪存空间中Block或Page的映射关系。</p>
+<p>在进行读写时，用户通过逻辑地址访问SSD，会先经过映射表的转译来获取闪存物理地址再进行之后的操作，假如是对新块写操作，此时映射表并没有当前映射关系，经过FTL挑选合适的块写入后，映射表中会将当前映射记录下来。</p>
+<p>映射表本身也会占用一定的空间用于自身的存储，SSD也都会为此类事情预留一部分空间。由于映射表的访问很频繁，通常会将映射表存储在RAM中，市面上有些SSD的主板上会自带一块小型DRAM用于映射表的缓存，而另外一部分SSD则选择会使用主机内存。</p>
+<h3 id="垃圾回收"><a class="header-anchor" href="#垃圾回收">¶</a><strong>垃圾回收</strong></h3>
+<p>因为闪存不能覆盖写的特性，每次写入老块之前都要先擦除，这个过程就是先将块数据读出，将有用数据读取出来，然后将当前块擦除，再将<strong>有效数据</strong>和当前数据一起写入目标块中，这个过程做的操作简称为<strong>读擦写</strong>，而这个过程为称为垃圾回收（GC）。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7751428f19184c5b8e799a16b016c193~tplv-k3u1fbpfcp-watermark.image?" alt="image.png"></p>
+<p>新盘刚开始写入过程中，因为是空盘，所以不会触发GC，当硬盘空间可用量小于某一个阈值时，GC操作将会触发。在GC之前，用户数据会先写入预留空间OP（Over Provisioning）中，这个空间对用户不可见，所以通常我们拿到收的硬盘可用空间往往会比规格容量小一些。</p>
+<p>很明显，这种GC会使原本简单的操作变得复杂且低效，并且相比原本要写入的数据，会对块中<strong>有效数据</strong>做额外的写入，这种现象称为写放大WA（Write Amplification），计算公式为：<code>WA = 实际写入量 / 用户数据量</code>，其中<code>实际写入量 = 块有效数据量 + 用户数据量</code>。可以看出，块中的垃圾密度越大，有效数据就越小，WA也随之而然的跟着变小。</p>
+<p>另外，SSD中GC有两种触发方式，一种是前台垃圾回收Foreground GC，它在用户写入数据无可用块时主动触发，另外一种是后台垃圾回收Background GC，它在SSD空闲时由内部控制触发。前者出发时，用户写入需要额外等待GC的完成，后者则尽可能避免前者带来的时间的耗费。</p>
+<h3 id="4k对齐"><a class="header-anchor" href="#4k对齐">¶</a><strong>4K对齐</strong></h3>
+<p>传统HDD扇区单位一直习惯于512Byte，有些文件系统默认保留前63个扇区，也就是前<code>512 * 63 / 1024 = 31.5</code>KB，假设闪存Page和簇（OS读写基本单位）都大小为4KB，那么一个Page对应着8个扇区，用户数据将于第8个Page的第3.5KB位置开始写入，导致之后的每一个簇都会跨两个Page，读写处于超界处，这对于闪存会造成更多的读损及读写开销。</p>
+<p>除了OS层的4K对齐至关重要以外，在文件写入过程中仍然需要关注4K对齐的问题。假设Page大小仍然为4KB，向一个空白文件写入5KB数据，此时需要2个Page来存储数据，并且可以写满Page1，而Page2只写入1KB数据，当再次向文件顺序写入数据时，仍然需要读取Page2的数据与新写入数据合并再写入新的Page中，此时额外的开销已经产生了。</p>
+<p>对于这种情况我们可以人工补齐4K来避免额外的读开销，当然这个优化不是必须的，同时要结合自己的实际场景来做抉择。</p>
+<h3 id="读写顺序"><a class="header-anchor" href="#读写顺序">¶</a><strong>读写顺序</strong></h3>
+<p>顺序读写和随机读写一直以来都是读写性能优化中最重要的一点，无论HDD还是SSD，读写方式的不同所带来的影响也不同。随机读写意味着要重新寻址，对于HDD来说需要磁头的切换甚至柱面的切换，SSD则需要重新定位行列地址线，相比于HDD，SSD不需要机械运动，因此随机读写带来的影响会小很多，而顺序读写可以免去再次寻址过程，在应用设计允许的情况下，顺序读写都是最优之选。</p>
+<p>对于SSD来说，顺序写可以保证数据有序的写在相邻的Page和Block中，当数据或文件删除时，GC垃圾也相对比较集中，可以大大降低WA带来的影响。</p>
+<p>主流操作系统都会有预读，顺序读可以提高预读缓存命中率，减少硬件读取次数。所以，如果可以，请尽可能顺序读写。</p>
+<h1><strong>参考</strong></h1>
+<ul>
+<li><a href="https://www.cnblogs.com/whl320124/articles/10063813.html" target="_blank" rel="noopener">深入了解机械硬盘的读写原理和碎片的产生</a></li>
+<li><a href="https://blog.csdn.net/wangshouchao/article/details/48606639" target="_blank" rel="noopener">内存（DRAM）的工作原理及时序介绍</a></li>
+<li><a href="http://www.wowotech.net/basic_tech/307.html" target="_blank" rel="noopener">DRAM 原理 1 ：DRAM Storage Cell</a></li>
+<li><a href="http://hardwarehell.com/articles/ras_cas.htm" target="_blank" rel="noopener">Meaning Behind Ram RAS and CAS</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/52272990" target="_blank" rel="noopener">浅聊SRAM和DRAM的区别</a></li>
+<li><a href="https://blog.joway.io/posts/ssd-notes/" target="_blank" rel="noopener">SSD 背后的奥秘</a></li>
+<li><a href="https://item.jd.com/12367097.html" target="_blank" rel="noopener">深入浅出SSD - 固态存储核心技术原理与实战</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/02/22/【参赛总结】第二届云原生编程挑战赛-冷热读写场景的RocketMQ存储系统设计/" rel="next" title="【参赛总结】第二届云原生编程挑战赛-冷热读写场景的RocketMQ存储系统设计">
+                <i class="fa fa-chevron-left"></i> 【参赛总结】第二届云原生编程挑战赛-冷热读写场景的RocketMQ存储系统设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
 
     <div class="post-spread">
-      {% if theme.jiathis %}
-        {% include '_partials/share/jiathis.swig' %}
-      {% elseif theme.baidushare %}
-        {% include '_partials/share/baidushare.swig' %}
-      {% elseif theme.add_this_id %}
-        {% include '_partials/share/add-this.swig' %}
-      {% elseif theme.duoshuo_shortname and theme.duoshuo_share %}
-        {% include '_partials/share/duoshuo_share.swig' %}
-      {% endif %}
+      
     </div>
   </div>
 
-{% endblock %}
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+          </div>
+          
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars1.githubusercontent.com/u/26395860?s=460&v=4" alt="Nico">
+            
+              <p class="site-author-name" itemprop="name">Nico</p>
+              <p class="site-description motion-element" itemprop="description">我是Nico，梦想是做一名兴趣使然的码农，于是我一步步变强，后来我成为了光头</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ainilili" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://note.isnico.com/" title="Nico's笔记" target="_blank">Nico's笔记</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.abby.md/" title="Abby's博客" target="_blank">Abby's博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ilovey.live/" title="低调小熊猫" target="_blank">低调小熊猫</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://zhangsan.plus/" title="ZhangSan_Plus'博客" target="_blank">ZhangSan_Plus'博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">HDD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">DRAM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">SSD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#映射管理"><span class="nav-number">4.0.1.</span> <span class="nav-text">¶映射管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#垃圾回收"><span class="nav-number">4.0.2.</span> <span class="nav-text">¶垃圾回收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4k对齐"><span class="nav-number">4.0.3.</span> <span class="nav-text">¶4K对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读写顺序"><span class="nav-number">4.0.4.</span> <span class="nav-text">¶读写顺序</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小Nico</span>
+
+  
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
